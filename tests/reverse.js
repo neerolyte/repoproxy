@@ -9,21 +9,26 @@ module.exports = testCase({
         // clean up
         callback();
     },
-    testStartServer: function (test) {
+    testStartDefaultServer: function (test) {
 		var util = require('util');
 		var http_proxy = require('../lib/proxy')
 		var fs = require('fs')
 
 		var proxy = http_proxy.createServer(
 			{
-				"type": "YumProxyServer",
-				"name": "node-proxy",
-				"origins": [
-					{
-						"host": "google.com",
-						"port": 80
-					}
-				],
+				"listen": {
+					"hostname": "127.0.0.1",
+					"port": conf.ports.init
+				},
+				"proxy": {
+					"name": "node-proxy",
+					"origins": [
+						{
+							"host": "google.com",
+							"port": 80
+						}
+					]
+				},
 				"cache": {
 					"memory": {
 						"maxitems": 1000000,
@@ -47,10 +52,30 @@ module.exports = testCase({
 
 		this.proxy=proxy;
 		// explicitly confirm type
-		test.ok(this.proxy instanceof require('../lib/proxy').YumProxyServer);
+		test.ok(this.proxy instanceof require('../lib/reverseProxy').Server);
 
 		this.proxy.close();
 
         test.done();
-    }
+    },
+
+	testHelloWorld: function(test) {
+		var http = require('http')
+		var client = http.createClient(conf.ports.proxy, '127.0.0.1');
+
+		var req = client.request('GET', '/hello', {});
+
+		req.end();
+		req.on('response', function(res) {
+			test.equal('200', res.statusCode);
+			res.on('data', function(chunk) {
+				if (!this.body) this.body = '';
+				this.body += chunk;
+			});
+			res.on('end', function() {
+				test.equal(this.body, 'world\n');
+				test.done();
+			});
+		});
+	}
 });

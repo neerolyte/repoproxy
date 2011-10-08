@@ -26,14 +26,16 @@ pids=()
 trap cleanup INT TERM EXIT
 
 rm -rf helpers/cache; mkdir helpers/cache
+rm -rf helpers/yumcache; mkdir helpers/yumcache
 rm -f helpers/access_log
 
 # start a background proxy and webserver
 node helpers/webserver.js & pids+=($!)
 node helpers/proxy.js & pids+=($!)
+node helpers/yumproxy.js & pids+=($!)
 
 # hacky sleep to let servers start up before running tests
-sleep 1
+sleep .1
 
 nodeunit .
 
