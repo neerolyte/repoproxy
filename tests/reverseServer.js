@@ -57,5 +57,25 @@ module.exports = testCase({
 		this.proxy.close();
 
         test.done();
-    }
+    },
+
+	testHelloWorld: function(test) {
+		var http = require('http')
+		var client = http.createClient(conf.ports.proxy, '127.0.0.1');
+
+		var req = client.request('GET', '/hello', {});
+
+		req.end();
+		req.on('response', function(res) {
+			test.equal('200', res.statusCode);
+			res.on('data', function(chunk) {
+				if (!this.body) this.body = '';
+				this.body += chunk;
+			});
+			res.on('end', function() {
+				test.equal(this.body, 'world\n');
+				test.done();
+			});
+		});
+	}
 });
