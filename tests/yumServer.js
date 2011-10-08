@@ -1,4 +1,5 @@
 var testCase = require('nodeunit').testCase;
+var conf = require('./helpers/config')
 
 module.exports = testCase({
     setUp: function (callback) {
@@ -15,20 +16,14 @@ module.exports = testCase({
 
 		var proxy = http_proxy.createServer(
 			{
-				"listen": {
-					"hostname": "0.0.0.0",
-					"port": 12345
-				},
-				"proxy": {
-					"type": "YumProxyServer",
-					"name": "node-proxy",
-					"origins": [
-						{
-							"host": "google.com",
-							"port": 80
-						}
-					]
-				},
+				"type": "YumProxyServer",
+				"name": "node-proxy",
+				"origins": [
+					{
+						"host": "google.com",
+						"port": 80
+					}
+				],
 				"cache": {
 					"memory": {
 						"maxitems": 1000000,
@@ -48,11 +43,11 @@ module.exports = testCase({
 			}
 		);
 		
-		proxy.listen(12345, '0.0.0.0', function() {});
+		proxy.listen(conf.ports.init, '127.0.0.1', function() {});
 
 		this.proxy=proxy;
-		// just ensuring that the proxy exists at this point is enough
-		test.ok(this.proxy);
+		// explicitly confirm type
+		test.ok(this.proxy instanceof require('../lib/proxy').YumProxyServer);
 
 		this.proxy.close();
 
