@@ -10,19 +10,13 @@ var fs = require('fs')
 
 var proxy = http_proxy.createServer(
 	{
-		"listen": {
-			"hostname": '127.0.0.1',
-			"port": conf.ports.proxy
-		},
-		"proxy": {
-			"name": "node-proxy",
-			"origins": [
-				{
-					"host": '127.0.0.1',
-					"port": conf.ports.webserver
-				}
-			]
-		},
+		"name": "node-proxy",
+		"origins": [
+			{
+				"host": '127.0.0.1',
+				"port": conf.ports.webserver
+			}
+		],
 		"cache": {
 			"memory": {
 				"maxitems": 1000000,
