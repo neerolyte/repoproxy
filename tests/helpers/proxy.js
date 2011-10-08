@@ -26,12 +26,12 @@ var proxy = http_proxy.createServer(
 				"stats": 0
 			},
 			"disk": {
-				"path": "cache"
+				"path": "helpers/cache"
 			},
 			"stats": 0
 		},
 		"accesslog": {
-			"path": "access_log"
+			"path": "helpers/access_log"
 		}
 	}
 );
