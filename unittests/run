@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Runs the unit tests with nodeunit
+
+cd "$(dirname "$0")" || {
+	echo "ERROR: failed to switch to the correct directory"
+	exit 1
+}
+
+if [[ $(type -t nodeunit) != file ]]; then
+	echo "ERROR: nodeunit doesn't seem to be installed."
+	echo "The suggested method for installing it is:"
+	echo "    curl http://npmjs.org/install.sh | sudo sh"
+	echo "    sudo npm install nodeunit"
+	exit 1
+fi
+
+rm -rf cache; mkdir cache
+rm -f access_log
+nodeunit .
+
+# vim: noet
