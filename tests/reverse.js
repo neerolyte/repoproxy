@@ -4,8 +4,18 @@ var conf = require('./helpers/config')
 module.exports = testCase({
     setUp: function (callback) {
 		var util = require('util');
-		var proxy = require('../lib/proxy')
-		var fs = require('fs')
+		var proxy = require('../lib/proxy');
+		var fs = require('fs');
+		var cacheDir = this.cacheDir = __dirname + '/tmp_cache';
+
+		console.log("mkdir cachedir");
+		try {
+			fs.mkdirSync(cacheDir, 0777);
+		} catch (e) {
+			console.log("mkdir failed: " + e.message);
+			throw e;
+		}
+		console.log("post mkdir");
 
 		// set up basic web server
 		var http = require('http').createServer(function (req, res) {
@@ -30,28 +40,33 @@ module.exports = testCase({
 					"stats": 0
 				},
 				"disk": {
-					"path": "helpers/cache"
+					"path": cacheDir
 				},
 				"stats": 0
 			},
 			"accesslog": {
-				"path": "helpers/access_log"
+				"path": __dirname + '/tmp_access.log'
 			}
 		});
 
 		this.http = http;
 		this.proxy = proxy;
 
+		console.log("starting web server");
 		http.listen(conf.ports.webserver, "127.0.0.1", function() {
+			console.log("http callback");
 			proxy.listen(conf.ports.proxy, '127.0.0.1', function() {
+				console.log("runninig callback()")
 				callback();
 			});
 		});
 	},
     tearDown: function (callback) {
-        // clean up
+		var fs = require('fs');
+		console.log(this)
 		this.proxy.close()
 		this.http.close()
+		fs.rmdirSync(this.cacheDir)
         callback();
     },
 	testProxyType: function(test) {
