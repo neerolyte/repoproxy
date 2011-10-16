@@ -3,3 +3,4 @@ proxy.conf
 access_log
 filters.js
 .*.swp
+node_modules/
