@@ -15,17 +15,6 @@ if [[ $(type -t nodeunit) != file ]]; then
 	exit 1
 fi
 
-cleanup() {
-	rm -rf helpers/cache
-	rm -f helpers/access_log
-}
-pids=()
-trap cleanup INT TERM EXIT
-
-rm -rf helpers/cache; mkdir helpers/cache
-rm -rf helpers/yumcache; mkdir helpers/yumcache
-rm -f helpers/access_log
-
 nodeunit .
 
 # vim: noet

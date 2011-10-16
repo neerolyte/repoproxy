@@ -1,21 +1,18 @@
 var testCase = require('nodeunit').testCase;
-var conf = require('./helpers/config')
+var helper = require('./lib/helper')
 
 module.exports = testCase({
     setUp: function (callback) {
 		var util = require('util');
 		var proxy = require('../lib/proxy');
 		var fs = require('fs');
-		var cacheDir = this.cacheDir = __dirname + '/tmp_cache';
 
-		console.log("mkdir cachedir");
-		try {
-			fs.mkdirSync(cacheDir, 0777);
-		} catch (e) {
-			console.log("mkdir failed: " + e.message);
-			throw e;
-		}
-		console.log("post mkdir");
+		helper.cleanUpTmp();
+		helper.setUp({
+			dirs: [
+				helper.config.dirs.cache
+			]
+		});
 
 		// set up basic web server
 		var http = require('http').createServer(function (req, res) {
@@ -28,7 +25,7 @@ module.exports = testCase({
 			"origins": [
 				{
 					"host": "127.0.0.1",
-					"port": conf.ports.webserver
+					"port": helper.config.ports.webserver
 				}
 			],
 			"cache": {
@@ -40,33 +37,31 @@ module.exports = testCase({
 					"stats": 0
 				},
 				"disk": {
-					"path": cacheDir
+					"path": helper.config.dirs.cache
 				},
 				"stats": 0
 			},
 			"accesslog": {
-				"path": __dirname + '/tmp_access.log'
+				"path": helper.config.files.accessLog
 			}
 		});
 
 		this.http = http;
 		this.proxy = proxy;
 
-		console.log("starting web server");
-		http.listen(conf.ports.webserver, "127.0.0.1", function() {
-			console.log("http callback");
-			proxy.listen(conf.ports.proxy, '127.0.0.1', function() {
-				console.log("runninig callback()")
+		http.listen(helper.config.ports.webserver, "127.0.0.1", function() {
+			proxy.listen(helper.config.ports.proxy, '127.0.0.1', function() {
 				callback();
 			});
 		});
 	},
     tearDown: function (callback) {
 		var fs = require('fs');
-		console.log(this)
-		this.proxy.close()
-		this.http.close()
-		fs.rmdirSync(this.cacheDir)
+		if (this.proxy)
+			this.proxy.close();
+		if (this.http)
+			this.http.close();
+		helper.cleanUpTmp();
         callback();
     },
 	testProxyType: function(test) {
@@ -76,7 +71,7 @@ module.exports = testCase({
 	},
 	testHelloWorld: function(test) {
 		var http = require('http')
-		var client = http.createClient(conf.ports.proxy, '127.0.0.1');
+		var client = http.createClient(helper.config.ports.proxy, '127.0.0.1');
 
 		var req = client.request('GET', '/hello', {});
 
