@@ -2,11 +2,13 @@
 
 ## About
 
-repoproxy is a caching web proxy that caches Linux repositories for multiple client nodes.
+repoproxy is a caching web proxy that caches Linux repositories for multiple client nodes. As items are cached they gradually create a mirror of the upstream repos.
 
-The main differences between this approach and the regular approaches is that repoproxy will:
- * only cache what you need
+The main differences between this approach and regular mirroring approaches is that repoproxy will:
+ * only mirror what you need
  * store its cache in the same layout as the upstream repo
+ * make caching yum again
+ * one day be apt
 
 It started life as [node-proxy](https://github.com/dansimau/node-proxy).
 
