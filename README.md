@@ -1,19 +1,15 @@
-# node-proxy
+# repoproxy
 
 ## About
 
-node-proxy is a reverse caching web proxy that is designed to speed up slow web applications. It does this by serving out stale pages to clients while the object is refreshed from the origin server in the background.
+repoproxy is a caching web proxy that caches Linux repositories for multiple client nodes.
 
-## Features
+The main differences between this approach and the regular approaches is that repoproxy will:
+ * only cache what you need
+ * store its cache in the same layout as the upstream repo
 
- * Disk/memory caching
- * Asychronous background refresh (clients are always served from cache)
- * Access log
+It started life as [node-proxy](https://github.com/dansimau/node-proxy).
 
-## Limitations
+## Features/Limitations
 
-You can get a feel for the limitations by having a quick look at the [issue tracker](https://github.com/dansimau/node-proxy/issues).
-
-## Requirements
-
- * Node.js 0.4.7
+You can get a feel for the limitations or request new features on the [issue tracker](https://github.com/neerolyte/node-proxy/issues).

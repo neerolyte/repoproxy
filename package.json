@@ -1,6 +1,6 @@
 { 
-	"name": "node-proxy",
-	"description": "Pluggable proxy for node.",
+	"name": "repoproxy",
+	"description": "proxy designed solely for caching linux repos sanely",
 	"version": "0.0.0",
 	"dependencies":{
 		"nodeunit" : "0.5.x",
