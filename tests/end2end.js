@@ -7,7 +7,9 @@ var helper = require('./lib/helper')
 
 module.exports = testCase({
     setUp: function (callback) {
-		var proxy = this.proxy = require('..').createServer()
+		var proxy = this.proxy = require('..').createServer({
+			cacheDir: __dirname + '/tmp_cache',
+		});
 		// set up basic web server
 		var http = this.http = require('http').createServer(function (req, res) {
 			res.writeHead(200, {'Content-Type': 'text/plain'});

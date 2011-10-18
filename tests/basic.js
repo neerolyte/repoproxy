@@ -29,8 +29,10 @@ module.exports = testCase({
 			cacheDir: __dirname + '/tmp_cache',
 		});
 
+		var req = {url: '/foo/bar.rpm'};
+
 		test.equal(
-			proxy.getStorePath({path: '/foo/bar.rpm'}),
+			proxy.getStorePath(req),
 			__dirname + '/tmp_cache/foo/bar.rpm'
 		);
 		
