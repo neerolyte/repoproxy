@@ -21,4 +21,19 @@ module.exports = testCase({
 
         test.done();
     },
+	/**
+	 * Test conversion of a request path to a storage path
+	 */
+	testStorePath: function(test) {
+		var proxy = require('..').createServer({
+			cacheDir: __dirname + '/tmp_cache',
+		});
+
+		test.equal(
+			proxy.getStorePath({path: '/foo/bar.rpm'}),
+			__dirname + '/tmp_cache/foo/bar.rpm'
+		);
+		
+		test.done();
+	},
 });
