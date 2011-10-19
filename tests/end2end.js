@@ -20,7 +20,11 @@ module.exports = testCase({
 			// we don't know where the server is until it's already listening
 			proxy.repos.push({
 				prefix: '/foo',
-				upstream: 'http://127.0.0.1:' + http.address().port + '/foo',
+				options: {
+					host: '127.0.0.1',
+					port: http.address().port,
+					path: '/foo',
+				}
 			});
 			proxy.listen(callback);
 		});

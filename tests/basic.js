@@ -44,13 +44,25 @@ module.exports = testCase({
 	testUpstream: function(test) {
 		var proxy = require('..').createServer({
 			repos: [
-				{ prefix: '/foo', upstream: 'http://bar.baz/foo' }
+				{ 
+					// incomming prefix to match on
+					prefix: '/foo',
+					options: {
+						// upstream repo
+						host: 'bar.baz',
+						port: 80,
+						path: '/foo',
+					}
+				},
 			],
 		});
 
 		var req = {url: '/foo/boh.rpm'};
 			
-		test.equal(proxy.getUpstreamPath(req), 'http://bar.baz/foo/boh.rpm');
+		test.equal(
+			proxy.getUpstreamOptions(req).toString(),
+			{ host: 'bar.baz', port: 80, path: '/foo/boh.rpm' }
+		);
 		
 		test.done();
 	},
