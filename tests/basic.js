@@ -38,4 +38,20 @@ module.exports = testCase({
 		
 		test.done();
 	},
+	/**
+	 * Test conversion of a request path to a upstream request
+	 */
+	testUpstream: function(test) {
+		var proxy = require('..').createServer({
+			repos: [
+				{ prefix: '/foo', upstream: 'http://bar.baz/foo' }
+			],
+		});
+
+		var req = {url: '/foo/boh.rpm'};
+			
+		test.equal(proxy.getUpstreamPath(req), 'http://bar.baz/foo/boh.rpm');
+		
+		test.done();
+	},
 });

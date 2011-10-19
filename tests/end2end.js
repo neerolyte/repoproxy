@@ -19,9 +19,8 @@ module.exports = testCase({
 		http.listen(function() {
 			// we don't know where the server is until it's already listening
 			proxy.repos.push({
-				host: http.address().address,
-				port: http.address().port,
-				path: '/yum',
+				prefix: '/foo',
+				upstream: 'http://127.0.0.1:' + http.address().port + '/foo',
 			});
 			proxy.listen(callback);
 		});
@@ -51,9 +50,9 @@ module.exports = testCase({
 
 		var address = this.proxy.address();
 
-		var client = http.createClient(address.port, address.address);
+		var client = http.createClient(address.port, '127.0.0.1');
 
-		var req = client.request('GET', '/yum/foo.rpm', {});
+		var req = client.request('GET', '/foo/bar.rpm', {});
 
 		req.end();
 		req.on('response', function(res) {
