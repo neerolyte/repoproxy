@@ -3,7 +3,6 @@
 	"description": "proxy designed solely for caching linux repos sanely",
 	"version": "0.0.0",
 	"dependencies":{
-		"nodeunit" : "0.5.x",
-		"wrench" : "1.3.x"
+		"nodeunit" : "0.5.x"
 	}
 }
