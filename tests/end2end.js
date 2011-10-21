@@ -77,7 +77,7 @@ module.exports = testCase({
 			});
 		});
 	},
-	testCache: function(test) {
+	testCacheStore: function(test) {
 		var http = require('http');
 		var self = this;
 
@@ -98,6 +98,41 @@ module.exports = testCase({
 				var cached = fs.readFileSync(self.proxy.options.cacheDir + '/foo/cache.rpm');
 
 				test.equal(cached, 'Hello world\n');
+				clearTimeout(deadlockTimeout);
+				test.done();
+			});
+		});
+	},
+	testCacheRetrieve: function(test) {
+		var http = require('http');
+		var self = this;
+
+		// timeout test (avoid deadlocks)
+		var deadlockTimeout = setTimeout(function() {
+			throw("test appears to be deadlocked")
+		}, 1000);
+
+		var address = this.proxy.address();
+
+		var client = http.createClient(address.port, '127.0.0.1');
+
+		wrench.mkdirSyncRecursive(self.proxy.options.cacheDir + '/foo', 0777);
+		fs.writeFileSync(
+			self.proxy.options.cacheDir + '/foo/cache.rpm',
+			'Cache retrieval test...'
+		);
+
+		var req = client.request('GET', '/foo/cache.rpm', {});
+
+		req.end();
+		req.on('response', function(res) {
+			test.equal('200', res.statusCode);
+			res.on('data', function(chunk) {
+				if (!this.body) this.body = '';
+				this.body += chunk;
+			});
+			res.on('end', function() {
+				test.equal(this.body, 'Cache retrieval test...');
 				clearTimeout(deadlockTimeout);
 				test.done();
 			});
