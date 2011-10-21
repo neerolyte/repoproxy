@@ -15,17 +15,24 @@ module.exports = testCase({
 		// set up basic web server
 		var http = this.http = require('http').createServer(function (req, res) {
 			res.writeHead(200, {'Content-Type': 'text/plain'});
-			res.end('Hello world\n');
+			// behavior depends on url path
+			if (req.url.match(/^\/echo\//)) {
+				res.end(req.url);
+			} else {
+				res.end(
+					'Hello world\n'
+				);
+			}
 		});
 		
 		http.listen(function() {
 			// we don't know where the server is until it's already listening
 			proxy.repos.push({
-				prefix: '/foo',
+				prefix: '/',
 				options: {
 					host: '127.0.0.1',
 					port: http.address().port,
-					path: '/foo',
+					path: '/',
 				}
 			});
 			proxy.listen(callback);
@@ -135,6 +142,54 @@ module.exports = testCase({
 				test.equal(this.body, 'Cache retrieval test...');
 				clearTimeout(deadlockTimeout);
 				test.done();
+			});
+		});
+	},
+	/**
+	 * Secondary requests are cloning earlier request paths
+	 *
+	 * First request asks for '/foo', proxy requests '/foo' (so far so good).
+	 * Second request asks for '/bar', proxy requests '/foo/bar' (oops).
+	 *
+	 * Issue #15
+	 */
+	testSubsequentRequestPaths: function(test) {
+		var http = require('http')
+
+		// timeout test (avoid deadlocks)
+		var deadlockTimeout = setTimeout(function() {
+			throw("test appears to be deadlocked")
+		}, 1000);
+
+		var address = this.proxy.address();
+
+		var client = http.createClient(address.port, '127.0.0.1');
+
+		var req = client.request('GET', '/echo/foo.rpm', {});
+		var req2 = client.request('GET', '/echo/bar.rpm', {});
+
+		req.end();
+		req.on('response', function(res) {
+			test.equal('200', res.statusCode);
+			res.on('data', function(chunk) {
+				if (!this.body) this.body = '';
+				this.body += chunk;
+			});
+			res.on('end', function() {
+				test.equal(this.body, '/echo/foo.rpm');
+				req2.end();
+				req2.on('response', function(res) {
+					test.equal('200', res.statusCode);
+					res.on('data', function(chunk) {
+						if (!this.body) this.body = '';
+						this.body += chunk;
+					});
+					res.on('end', function() {
+						test.equal(this.body, '/echo/bar.rpm');
+						clearTimeout(deadlockTimeout);
+						test.done();
+					});
+				});
 			});
 		});
 	},
