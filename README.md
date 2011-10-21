@@ -26,6 +26,6 @@ You can get a feel for the limitations or request new features on the [issue tra
   * git submodule init
   * git submodule update
   * sudo npm update
-  * ./tests/run
+  * npm test
  * Copy config.js.example to config.js and modify to your needs
  * run ./proxy.js

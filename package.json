@@ -1,8 +1,21 @@
-{ 
-	"name": "repoproxy",
-	"description": "proxy designed solely for caching linux repos sanely",
-	"version": "0.0.0",
-	"dependencies":{
-		"nodeunit" : "0.5.x"
-	}
+{
+  "name": "repoproxy",
+  "description": "proxy designed solely for caching linux repos sanely",
+  "version": "0.1.0",
+  "dependencies": {
+    "nodeunit": "0.5.x"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": "0.4.x"
+  },
+  "author": "David Schoen <dave@lyte.id.au> (http://lyte.id.au/)",
+  "homepage": "https://github.com/neerolyte/repoproxy",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/neerolyte/repoproxy.git"
+  },
+  "scripts": {
+    "test": "tests/run"
+  }
 }
