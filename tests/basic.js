@@ -2,7 +2,6 @@
  * Really basic test cases only
  */
 var testCase = require('nodeunit').testCase;
-var helper = require('./lib/helper')
 
 module.exports = testCase({
 	/**
