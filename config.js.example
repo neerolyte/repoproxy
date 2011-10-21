@@ -13,7 +13,23 @@ module.exports = {
 					port: 80,
 					path: '/bar', // path on origin that this prefix should look under
 				}
-			}
+			},
+			{
+				prefix: '/ubuntu',
+				options: {
+					host: 'example.com',
+					port: 80,
+					path: '/path/to/ubuntu',
+				}
+			},
+			{
+				prefix: '/centos',
+				options: {
+					host: 'example.com',
+					port: 80,
+					path: '/path/to/centos',
+				}
+			},
 		],
 	}
 };
