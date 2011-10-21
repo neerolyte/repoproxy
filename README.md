@@ -15,4 +15,4 @@ It started life as [node-proxy](https://github.com/dansimau/node-proxy).
 
 ## Features/Limitations
 
-You can get a feel for the limitations or request new features on the [issue tracker](https://github.com/neerolyte/node-proxy/issues).
+You can get a feel for the limitations or request new features on the [issue tracker](https://github.com/neerolyte/repoproxy/issues).
