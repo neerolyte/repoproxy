@@ -12,6 +12,7 @@ module.exports = testCase({
 		var proxy = this.proxy = require('..').createServer({
 			cacheDir: __dirname + '/tmp_cache',
 		});
+		proxy.log.disable();
 		// set up basic web server
 		var http = this.http = require('http').createServer(function (req, res) {
 			// behavior depends on url path
