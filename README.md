@@ -16,3 +16,16 @@ It started life as [node-proxy](https://github.com/dansimau/node-proxy).
 ## Features/Limitations
 
 You can get a feel for the limitations or request new features on the [issue tracker](https://github.com/neerolyte/repoproxy/issues).
+
+## Installation
+
+ * Install NodeJS 0.4.x from: http://nodejs.org/ (make sure you compile ssl support or NPM won't work)
+ * Install NPM from: http://npmjs.org/
+ * Checkout repoproxy: git clone http://github.com/neerolyte/repoproxy.git
+ * In repoproxy working copy:
+  * git submodule init
+  * git submodule update
+  * sudo npm update
+  * ./tests/run
+ * Copy config.js.example to config.js and modify to your needs
+ * run ./proxy.js
