@@ -223,4 +223,34 @@ module.exports = testCase({
 			});
 		});
 	},
+	/**
+	 * Requesting directory terminates proxy
+	 *
+	 * Issue #20
+	 */
+	testRequestDirectory: function(test) {
+		var http = require('http')
+
+		// timeout test (avoid deadlocks)
+		var deadlockTimeout = setTimeout(function() {
+			throw("test appears to be deadlocked")
+		}, 1000);
+
+		var address = this.proxy.address();
+
+		var client = http.createClient(address.port, '127.0.0.1');
+
+		wrench.mkdirSyncRecursive(this.proxy.options.cacheDir + '/foo', 0777);
+		var req = client.request('GET', '/foo', {});
+
+		req.end();
+		req.on('response', function(res) {
+			res.on('end', function() {
+				clearTimeout(deadlockTimeout);
+				// any response is good enough for this bug
+				// as previously the proxy was terminating for any directory
+				test.done();
+			});
+		});
+	},
 });
