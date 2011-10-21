@@ -5,5 +5,17 @@ module.exports = {
 	},
 	"proxy": {
 		cacheDir: __dirname + '/cache',
+		repos: [
+			{
+				prefix: '/foo', // incomming prefix to match on
+				options: {
+					host: 'example.com',
+					port: 80,
+					path: '/bar', // path on origin that this prefix should look under
+				}
+			}
+		],
 	}
 };
+
+// vim: ft=javascript
