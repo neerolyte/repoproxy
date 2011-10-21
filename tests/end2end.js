@@ -4,6 +4,7 @@
  */
 var testCase = require('nodeunit').testCase;
 var helper = require('./lib/helper')
+var fs = require('fs');
 
 module.exports = testCase({
     setUp: function (callback) {
@@ -71,5 +72,31 @@ module.exports = testCase({
 				test.done();
 			});
 		});
-	}
+	},
+	testCache: function(test) {
+		var http = require('http');
+		var self = this;
+
+		// timeout test (avoid deadlocks)
+		var deadlockTimeout = setTimeout(function() {
+			throw("test appears to be deadlocked")
+		}, 1000);
+
+		var address = this.proxy.address();
+
+		var client = http.createClient(address.port, '127.0.0.1');
+
+		var req = client.request('GET', '/foo/bar.rpm', {});
+
+		req.end();
+		req.on('response', function(res) {
+			res.on('end', function() {
+				var cached = fs.readFileSync(self.proxy.options.cacheDir + '/foo/bar.rpm');
+
+				test.equal(cached, 'Hello world\n');
+				clearTimeout(deadlockTimeout);
+				test.done();
+			});
+		});
+	},
 });
