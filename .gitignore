@@ -1,5 +1,5 @@
-cache/
-proxy.conf
+/cache/
+config.js
 access_log
 filters.js
 .*.swp
