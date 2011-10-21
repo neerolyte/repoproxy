@@ -217,10 +217,6 @@ module.exports = testCase({
 		req.end();
 		req.on('response', function(res) {
 			test.equal('404', res.statusCode);
-			console.log(res.statusCode);
-			res.on('data', function(chunk) {
-				console.log(chunk.toString());
-			});
 			res.on('end', function() {
 				clearTimeout(deadlockTimeout);
 				test.done();
