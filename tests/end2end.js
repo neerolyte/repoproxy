@@ -16,8 +16,11 @@ module.exports = testCase({
 		var http = this.http = require('http').createServer(function (req, res) {
 			res.writeHead(200, {'Content-Type': 'text/plain'});
 			// behavior depends on url path
-			if (req.url.match(/^\/echo\//)) {
+			if (req.url.match(/^\/echo\/?/)) {
 				res.end(req.url);
+			}
+			else if (req.url.match(/^\/fourohfour\/?/)) {
+				res.end('No file for you!');
 			} else {
 				res.end(
 					'Hello world\n'
@@ -190,6 +193,34 @@ module.exports = testCase({
 						test.done();
 					});
 				});
+			});
+		});
+	},
+	/**
+	 * Four oh four
+	 *
+	 * Issue #13
+	 */
+	testUpstream404: function(test) {
+		var http = require('http')
+
+		// timeout test (avoid deadlocks)
+		var deadlockTimeout = setTimeout(function() {
+			throw("test appears to be deadlocked")
+		}, 1000);
+
+		var address = this.proxy.address();
+
+		var client = http.createClient(address.port, '127.0.0.1');
+
+		var req = client.request('GET', '/fourohfour/foo.rpm', {});
+
+		req.end();
+		req.on('response', function(res) {
+			test.equal('404', res.statusCode);
+			res.on('end', function() {
+				clearTimeout(deadlockTimeout);
+				test.done();
 			});
 		});
 	},
