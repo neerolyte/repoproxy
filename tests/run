@@ -7,14 +7,6 @@ cd "$(dirname "$0")" || {
 	exit 1
 }
 
-if [[ $(type -t nodeunit) != file ]]; then
-	echo "ERROR: nodeunit doesn't seem to be installed."
-	echo "The suggested method for installing it is:"
-	echo "    curl http://npmjs.org/install.sh | sudo sh"
-	echo "    sudo npm install nodeunit"
-	exit 1
-fi
-
-nodeunit .
+../node_modules/nodeunit/bin/nodeunit .
 
 # vim: noet
