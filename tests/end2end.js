@@ -14,17 +14,16 @@ module.exports = testCase({
 		});
 		// set up basic web server
 		var http = this.http = require('http').createServer(function (req, res) {
-			res.writeHead(200, {'Content-Type': 'text/plain'});
 			// behavior depends on url path
 			if (req.url.match(/^\/echo\/?/)) {
+				res.writeHead(200, {'Content-Type': 'text/plain'});
 				res.end(req.url);
-			}
-			else if (req.url.match(/^\/fourohfour\/?/)) {
+			} else if (req.url.match(/^\/fourohfour\/?/)) {
+				res.writeHead(404, {'Content-Type': 'text/plain'});
 				res.end('No file for you!');
 			} else {
-				res.end(
-					'Hello world\n'
-				);
+				res.writeHead(200, {'Content-Type': 'text/plain'});
+				res.end('Hello world\n');
 			}
 		});
 		
@@ -218,6 +217,10 @@ module.exports = testCase({
 		req.end();
 		req.on('response', function(res) {
 			test.equal('404', res.statusCode);
+			console.log(res.statusCode);
+			res.on('data', function(chunk) {
+				console.log(chunk.toString());
+			});
 			res.on('end', function() {
 				clearTimeout(deadlockTimeout);
 				test.done();
