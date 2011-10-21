@@ -3,4 +3,5 @@ proxy.conf
 access_log
 filters.js
 .*.swp
-node_modules/
+node_modules/nodeunit
+node_modules/.bin

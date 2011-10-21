@@ -3,8 +3,9 @@
  * and sanity check the responses
  */
 var testCase = require('nodeunit').testCase;
-var helper = require('./lib/helper')
 var fs = require('fs');
+var wrench = require('wrench');
+var path = require('path');
 
 module.exports = testCase({
     setUp: function (callback) {
@@ -32,8 +33,11 @@ module.exports = testCase({
     },
     tearDown: function (callback) {
         // clean up
-		if (this.proxy)
+		if (this.proxy) {
+			if (path.existsSync(this.proxy.options.cacheDir))
+				wrench.rmdirSyncRecursive(this.proxy.options.cacheDir);
 			this.proxy.close();
+		}
 		if (this.http)
 			this.http.close();
 
@@ -86,12 +90,12 @@ module.exports = testCase({
 
 		var client = http.createClient(address.port, '127.0.0.1');
 
-		var req = client.request('GET', '/foo/bar.rpm', {});
+		var req = client.request('GET', '/foo/cache.rpm', {});
 
 		req.end();
 		req.on('response', function(res) {
 			res.on('end', function() {
-				var cached = fs.readFileSync(self.proxy.options.cacheDir + '/foo/bar.rpm');
+				var cached = fs.readFileSync(self.proxy.options.cacheDir + '/foo/cache.rpm');
 
 				test.equal(cached, 'Hello world\n');
 				clearTimeout(deadlockTimeout);
