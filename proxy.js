@@ -12,5 +12,5 @@ listen.port = conf.listen.port;
 var proxy = http_proxy.createServer(
 	conf.proxy
 ).listen(listen.port, listen.hostname, function() {
-	util.log("Listening on interface " + listen.hostname + ":" + listen.port);
+	util.log('Listening at http://' + listen.hostname + ':' + listen.port + '/');
 });
