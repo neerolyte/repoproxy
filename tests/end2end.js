@@ -48,7 +48,7 @@ module.exports = testCase({
 		var http = require('http')
 
 		// timeout test (avoid deadlocks)
-		setTimeout(function() {
+		var deadlockTimeout = setTimeout(function() {
 			throw("test appears to be deadlocked")
 		}, 1000);
 
@@ -62,13 +62,12 @@ module.exports = testCase({
 		req.on('response', function(res) {
 			test.equal('200', res.statusCode);
 			res.on('data', function(chunk) {
-				console.log("got data")
 				if (!this.body) this.body = '';
 				this.body += chunk;
 			});
 			res.on('end', function() {
-				console.log("got end");
-				test.equal(this.body, 'world\n');
+				test.equal(this.body, 'Hello world\n');
+				clearTimeout(deadlockTimeout);
 				test.done();
 			});
 		});
