@@ -17,9 +17,13 @@ module.exports = {
 			{
 				prefix: '/ubuntu',
 				options: {
-					host: 'example.com',
+					host: 'archive.ubuntu.com',
+					// It's better to choose a host close to you, e.g.:
+					// host: 'au.archive.ubuntu.com',
+					// host: 'us.archive.ubuntu.com',
+					// Find more here: https://launchpad.net/ubuntu/+archivemirrors
 					port: 80,
-					path: '/path/to/ubuntu',
+					path: '/ubuntu',
 				}
 			},
 			{
