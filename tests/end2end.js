@@ -30,9 +30,9 @@ module.exports = testCase({
 		
 		http.listen(function() {
 			// we don't know where the server is until it's already listening
-			proxy.repos.push({
+			proxy.repos['/'] = require('../lib/repo').createRepo({
 				prefix: '/',
-				options: {
+				upstream: {
 					host: '127.0.0.1',
 					port: http.address().port,
 					path: '/',

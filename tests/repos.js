@@ -8,11 +8,9 @@ module.exports = testCase({
     testAddRepoTwice: function (test) {
 		var proxy = require('..').createServer()
 
-		test.equal(proxy.repos.toString(), [].toString(), 'Repos should be empty to start with');
+		test.equal(Object.keys(proxy.repos), 0, 'Repos should be empty to start with');
 
-		proxy.repos.push({
-			'type': 'foo',
-		});
+		proxy.addRepo({prefix: '/'});
 
 		test.equal(proxy.repos.toString(), [ {type: 'foo'} ].toString(), 'There should be exactly one repo now');
 
@@ -20,13 +18,11 @@ module.exports = testCase({
 		
 		proxy = require('..').createServer()
 
-		test.equal(proxy.repos.toString(), [].toString(), 'Repos should be empty to start with');
+		test.equal(Object.keys(proxy.repos).length, 0, 'Repos should be empty to start with');
 
-		proxy.repos.push({
-			'type': 'foo',
-		});
+		proxy.addRepo({prefix: '/'});
 
-		test.equal(proxy.repos.toString(), [ {type: 'foo'} ].toString(), 'There should be exactly one repo now');
+		test.equal(Object.keys(proxy.repos).length, 1, 'There should be exactly one repo now');
 
 
         test.done();

@@ -9,7 +9,7 @@ module.exports = testCase({
 			cacheDir: __dirname + '/tmp_cache',
 		});
 		proxy.log.disable();
-		proxy.repos.push({prefix: '/foo'});
+		proxy.addRepo({prefix: '/foo'});
 		
 		proxy.listen(callback);
     },
