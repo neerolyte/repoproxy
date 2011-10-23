@@ -4,25 +4,32 @@ var wrench = require('wrench');
 var path = require('path');
 
 module.exports = testCase({
-    setUp: function (callback) {
-		var proxy = this.proxy = require('..').createServer({
-			cacheDir: __dirname + '/tmp_cache',
-		});
+	setUp: function (callback) {
+		var proxy = this.proxy = require('..').createServer();
 		proxy.log.disable();
+		
+		proxy.addRepo(
+			require('../lib/repo').createRepo(
+				{prefix: '/foo',}
+			)
+		);
+		proxy.addRepo(
+			require('../lib/repo').createRepo(
+				{prefix: '/bar',}
+			)
+		);
 		
 		proxy.listen(callback);
     },
     tearDown: function (callback) {
         // clean up
 		if (this.proxy) {
-			if (path.existsSync(this.proxy.options.cacheDir))
-				wrench.rmdirSyncRecursive(this.proxy.options.cacheDir);
 			this.proxy.close();
 		}
-
         callback();
     },
-	testMissingRepo: function(test) {
+	testTopLevelRepoList: function(test) {
+		//return test.done();
 		var http = require('http')
 
 		// timeout test (avoid deadlocks)
@@ -34,12 +41,18 @@ module.exports = testCase({
 
 		var client = http.createClient(address.port, '127.0.0.1');
 
-		var req = client.request('GET', '/foo.rpm', {});
+		var req = client.request('GET', '/', {});
 
 		req.end();
 		req.on('response', function(res) {
-			test.equal('404', res.statusCode);
+			test.equal('200', res.statusCode);
+			res.on('data', function(chunk) {
+				if (!this.body) this.body = '';
+				this.body += chunk;
+			});
 			res.on('end', function() {
+				test.ok(this.body.match(/href="\/foo"/));
+				test.ok(this.body.match(/href="\/bar"/));
 				clearTimeout(deadlockTimeout);
 				test.done();
 			});
