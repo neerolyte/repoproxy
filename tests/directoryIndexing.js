@@ -18,6 +18,14 @@ module.exports = testCase({
 				{prefix: '/bar',}
 			)
 		);
+		proxy.addRepo(
+			require('../lib/repo').createRepo(
+				{
+					prefix: '/dummy',
+					type: 'Dummy',
+				}
+			)
+		);
 		
 		proxy.listen(callback);
     },
@@ -29,7 +37,6 @@ module.exports = testCase({
         callback();
     },
 	testTopLevelRepoList: function(test) {
-		//return test.done();
 		var http = require('http')
 
 		// timeout test (avoid deadlocks)
@@ -59,9 +66,7 @@ module.exports = testCase({
 		});
 	},
 	testRepoIndex: function(test) {
-		// TODO: finish test
 		return test.done();
-
 		var http = require('http')
 
 		// timeout test (avoid deadlocks)
@@ -83,6 +88,7 @@ module.exports = testCase({
 				this.body += chunk;
 			});
 			res.on('end', function() {
+				console.log(this.body);
 				test.ok(this.body.match(/href="\/foasdfkjlhsdlkjhsdfo"/));
 				test.ok(this.body.match(/href="\/bar"/));
 				clearTimeout(deadlockTimeout);
