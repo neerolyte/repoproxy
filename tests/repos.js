@@ -27,4 +27,23 @@ module.exports = testCase({
 
         test.done();
     },
+	/**
+	 * Test that creating a new repo creates the right kind
+	 */
+    testCreateRepoType: function (test) {
+		var repo = require('../lib/repo').createRepo({
+			prefix: '/foo'
+		});
+
+		test.ok(repo instanceof require('../lib/repo').Repo);
+		
+		var repo = require('../lib/repo').createRepo({
+			prefix: '/foo',
+			type: 'Dummy',
+		});
+
+		test.ok(repo instanceof require('../lib/repoDummy').Repo);
+		
+        test.done();
+    },
 });
