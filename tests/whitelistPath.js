@@ -8,7 +8,7 @@ module.exports = testCase({
 		var proxy = this.proxy = require('..').createServer({
 			cacheDir: __dirname + '/tmp_cache',
 		});
-		//proxy.log.disable();
+		proxy.log.disable();
 		proxy.addRepo({prefix: '/foo'});
 		
 		proxy.listen(callback);
