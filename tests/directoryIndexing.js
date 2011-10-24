@@ -23,6 +23,12 @@ module.exports = testCase({
 				{
 					prefix: '/dummy',
 					type: 'Dummy',
+					paths: {
+						foo: {},
+						bar: {
+							baz: {}
+						},
+					}
 				}
 			)
 		);
