@@ -1,4 +1,5 @@
 var testCase = require('nodeunit').testCase;
+var util = require('util');
 
 module.exports = testCase({
 	/**
@@ -46,4 +47,35 @@ module.exports = testCase({
 		
         test.done();
     },
+	testRepoGetChildren: function(test) {
+		var repo = require('../lib/repo').createRepo({
+			prefix: '/foo',
+			type: 'Dummy',
+			paths: {
+				foo: {},
+				bar: {
+					baz: {}
+				},
+			}
+		});
+
+		test.equal(
+			util.inspect(Object.keys(repo.getChildren('/'))),
+			util.inspect(['foo', 'bar'])
+		);
+
+		test.equal(
+			util.inspect(Object.keys(repo.getChildren('/bar'))),
+			util.inspect(['baz'])
+		);
+
+		test.ok(repo.getChildren('/missing') === null);
+
+		test.equal(
+			util.inspect(repo.getChildren('/foo')),
+			util.inspect({})
+		);
+
+		test.done();
+	},
 });
