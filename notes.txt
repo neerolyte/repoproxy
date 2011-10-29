@@ -1,1 +1,3 @@
 All directories should be served with a trailing slash, e.g "foo/" not "foo".
+
+For Apt naming conventions, see: http://www.ibiblio.org/gferg/ldp/giles/repository/repository-2.html
