@@ -13,7 +13,7 @@ module.exports = testCase({
 		
 		proxy.addRepo(
 			require('../lib/repo').createRepo(
-				{prefix: '/foo',}
+				{ prefix: '/foo' }
 			)
 		);
 		
