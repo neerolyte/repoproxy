@@ -5,7 +5,7 @@ var path = require('path');
 var util = require('util');
 
 module.exports = testCase({
-	testParseRelease: function(test) {
+	testIndexRelease: function(test) {
 		var releaseStr = [
 			'SomeIgnoredMetadata: foo',
 			'MD5Sum:',
