@@ -25,4 +25,31 @@ module.exports = testCase({
 		
 		test.done();
 	},
+	testIndexPackages: function(test) {
+		var packagesStr = [
+			'Foo: bar',
+			'Filename: pool/multiverse/b/bar/bar_0.01.deb',
+			'UninterestingMetadata: sure is',
+			'',
+			'Filename: pool/multiverse/f/foo/foo_1.2.deb',
+		].join('\n');
+
+		var repo = require('../lib/repo').createRepo({
+			type: 'Apt'
+		});
+
+		repo.indexPackages(packagesStr);
+
+		test.equal(
+			'bar_0.01.deb',
+			Object.keys(repo.getChildren('pool/multiverse/b/bar')).pop()
+		);
+		
+		test.equal(
+			'foo_1.2.deb',
+			Object.keys(repo.getChildren('pool/multiverse/f/foo')).pop()
+		);
+		
+		test.done();
+	},
 });
