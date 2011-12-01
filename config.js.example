@@ -9,29 +9,35 @@ module.exports = {
 			/* Generic Repo */
 			{
 				prefix: '/foo', // incomming prefix to match on
-				host: 'example.com',
-				port: 80,
-				path: '/bar', // path on origin that this prefix should look under
-			},
+				upstream: {
+					host: 'example.com',
+					port: 80,
+					path: '/bar', // path on origin that this prefix should look under
+				}
+			},	      
 			//*/
 			/* Ubuntu (Apt) repo */
 			{
 				prefix: '/ubuntu',
-				host: 'archive.ubuntu.com',
-				// It's better to choose a host close to you, e.g.:
-				// host: 'au.archive.ubuntu.com',
-				// host: 'us.archive.ubuntu.com',
-				// Find more here: https://launchpad.net/ubuntu/+archivemirrors
-				port: 80,
-				path: '/ubuntu',
+				upstream: {
+					host: 'archive.ubuntu.com',
+					// It's better to choose a host close to you, e.g.:
+					// host: 'au.archive.ubuntu.com',
+					// host: 'us.archive.ubuntu.com',
+					// Find more here: https://launchpad.net/ubuntu/+archivemirrors
+					port: 80,
+					path: '/ubuntu',
+				}
 			},
 			//*/
 			/* CentOS (Yum) repo */
 			{
 				prefix: '/centos',
-				host: 'example.com',
-				port: 80,
-				path: '/path/to/centos',
+				upstream: {
+					host: 'example.com',
+					port: 80,
+					path: '/path/to/centos',
+				}
 			},
 			//*/
 			/* Dummy (debugging) repo */
