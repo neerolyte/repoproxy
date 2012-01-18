@@ -19,7 +19,7 @@ You can get a feel for the limitations or request new features on the [issue tra
 
 ## Installation
 
- * Install NodeJS 0.4.x from: http://nodejs.org/ (make sure you compile ssl support or NPM won't work)
+ * Install NodeJS 0.6.x from: http://nodejs.org/ (make sure you compile ssl support or NPM won't work)
  * Install NPM from: http://npmjs.org/
  * Checkout repoproxy: git clone http://github.com/neerolyte/repoproxy.git
  * In repoproxy working copy:
