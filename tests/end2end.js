@@ -241,8 +241,38 @@ module.exports = testCase({
 
 		var client = http.createClient(address.port, '127.0.0.1');
 
-		wrench.mkdirSyncRecursive(this.proxy.options.cacheDir + '/foo', 0777);
 		var req = client.request('GET', '/foo', {});
+
+		req.end();
+		req.on('response', function(res) {
+			res.on('end', function() {
+				clearTimeout(deadlockTimeout);
+				// any response is good enough for this bug
+				// as previously the proxy was terminating for any directory
+				test.done();
+			});
+		});
+	},
+	/**
+	 * Requesting directory terminates proxy.
+	 * Now also testing with trailing slash
+	 *
+	 * Issue #20
+	 */
+	testRequestDirectorySlash: function(test) {
+		var http = require('http')
+
+		// timeout test (avoid deadlocks)
+		var deadlockTimeout = setTimeout(function() {
+			throw("test appears to be deadlocked")
+		}, 1000);
+
+		var address = this.proxy.address();
+
+		var client = http.createClient(address.port, '127.0.0.1');
+
+		wrench.mkdirSyncRecursive(this.proxy.options.cacheDir, 0777);
+		var req = client.request('GET', '/foo/', {});
 
 		req.end();
 		req.on('response', function(res) {
