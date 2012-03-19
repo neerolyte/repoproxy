@@ -3,9 +3,11 @@
 cd "$(dirname "$0")"
 
 # install node
+apt-get update
+apt-get install -y python-software-properties
 add-apt-repository ppa:chris-lea/node.js
 apt-get update
-apt-get install -y python-software-properties nodejs npm
+apt-get install -y nodejs npm
 
 
 cd /repoproxy
