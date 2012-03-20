@@ -9,7 +9,7 @@ module.exports = testCase({
 			cacheDir: __dirname + '/tmp_cache',
 		});
 		proxy.log.disable();
-		proxy.repos.push({prefix: '/foo'});
+		proxy.addRepo({prefix: '/foo'});
 		
 		proxy.listen(callback);
     },
@@ -22,7 +22,7 @@ module.exports = testCase({
 		}
 		if (path.existsSync(__dirname + '/tmp_secret.txt'))
 			fs.unlinkSync(__dirname + '/tmp_secret.txt');
-
+		
         callback();
     },
 	/**
@@ -33,34 +33,24 @@ module.exports = testCase({
 	 * Issue #24
 	 */
 	testReadAbovePrefix: function(test) {
-		var http = require('http')
-
-		// timeout test (avoid deadlocks)
-		var deadlockTimeout = setTimeout(function() {
-			throw("test appears to be deadlocked")
-		}, 1000);
-
-		var address = this.proxy.address();
-
-		var client = http.createClient(address.port, '127.0.0.1');
-
-		wrench.mkdirSyncRecursive(this.proxy.options.cacheDir + '/foo', 0777);
-		fs.writeFileSync(
-			__dirname + '/tmp_secret.txt',
-			'This file is super secret'
+		test.ok(
+			this.proxy.getStorePath({url:'/foo/../bar.txt'}).indexOf(
+				this.proxy.options.cacheDir
+			) == 0
+		);
+		
+		test.ok(
+			this.proxy.getStorePath({url:'/foo/../../../bar.txt'}).indexOf(
+				this.proxy.options.cacheDir
+			) == 0
+		);
+		
+		test.ok(
+			this.proxy.getStorePath({url:'/../../../bar.txt'}).indexOf(
+				this.proxy.options.cacheDir
+			) == 0
 		);
 
-		var req = client.request('GET', '/../tmp_secret.txt', {});
-
-		req.end();
-		req.on('response', function(res) {
-			// requests that attempt to break outside of the prefix should
-			// simply be 404'd
-			test.equal('404', res.statusCode);
-			res.on('end', function() {
-				clearTimeout(deadlockTimeout);
-				test.done();
-			});
-		});
+		test.done();
 	},
 });

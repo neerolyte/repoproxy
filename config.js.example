@@ -6,17 +6,20 @@ module.exports = {
 	"proxy": {
 		cacheDir: __dirname + '/cache',
 		repos: [
+			/* Generic Repo */
 			{
 				prefix: '/foo', // incomming prefix to match on
-				options: {
+				upstream: {
 					host: 'example.com',
 					port: 80,
 					path: '/bar', // path on origin that this prefix should look under
 				}
-			},
+			},	      
+			//*/
+			/* Ubuntu (Apt) repo */
 			{
 				prefix: '/ubuntu',
-				options: {
+				upstream: {
 					host: 'archive.ubuntu.com',
 					// It's better to choose a host close to you, e.g.:
 					// host: 'au.archive.ubuntu.com',
@@ -26,14 +29,29 @@ module.exports = {
 					path: '/ubuntu',
 				}
 			},
+			//*/
+			/* CentOS (Yum) repo */
 			{
 				prefix: '/centos',
-				options: {
+				upstream: {
 					host: 'example.com',
 					port: 80,
 					path: '/path/to/centos',
 				}
 			},
+			//*/
+			/* Dummy (debugging) repo */
+			{
+				prefix: '/dummy',
+				type: 'Dummy',
+				paths: {
+					foo: {},
+					bar: {
+						baz: {}
+					},
+				}
+			},
+			//*/
 		],
 	}
 };

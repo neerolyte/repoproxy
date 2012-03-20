@@ -3,6 +3,7 @@ config.js
 access_log
 filters.js
 .*.swp
-node_modules/nodeunit
-node_modules/.bin
+node_modules
 vagrant/.vagrant
+*~
+npm-debug.log
