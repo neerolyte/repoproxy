@@ -4,6 +4,9 @@
 
 repoproxy is a caching web proxy that caches Linux repositories for multiple client nodes. As items are cached they gradually create a mirror of the upstream repos.
 
+I've stopped development on repoproxy in favor of documenting how to work better with existing solutions:
+http://lyte.id.au/2012/06/03/dropping-repoproxy-development-for-apt-cacher-ng/
+
 The main differences between this approach and regular mirroring approaches is that repoproxy will:
 
  * only mirror what you need
