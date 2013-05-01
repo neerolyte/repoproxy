@@ -3,19 +3,17 @@
 	"description": "Mirror repositories while you proxy them",
 	"version": "0.0.0",
 	"dependencies": {
+		"q": "*",
+		"mkdirp": "*"
+	},
+	"devDependencies": {
+		"wrench": "*",
 		"mocha": "*",
 		"chai": "*",
 		"chai-as-promised": "*",
 		"mocha-as-promised": "*",
 		"sinon-chai": "*",
-		"sinon": "*",
-		"optimist": "*",
-		"underscore": "*",
-		"underscore.string": "*",
-		"nock": "*",
-		"findit": "*",
-		"q": "*",
-		"fake-fs": "*"
+		"sinon": "*"
 	},
 	"engines": {
 		"node": "0.10.x"
