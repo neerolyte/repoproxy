@@ -1,0 +1,4 @@
+/.vagrant
+/Gemfile.lock
+/node_modules
+/vagrant/temp

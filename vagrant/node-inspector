@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+cd "$(dirname "$0")"
+
+if ! [[ $(./run_in_vm type -t node-inspector) = 'file' ]]; then
+	./run_in_vm sudo npm install -q node-inspector
+fi
+echo "Use http://tidier.dev:8080/debug?port=5858"
+./run_in_vm node-inspector

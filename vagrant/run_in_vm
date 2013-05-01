@@ -1,0 +1,58 @@
+#!/bin/bash -e
+
+cd "$(dirname "$0")"
+
+temp="$PWD/temp"
+config="$temp/vagrant-ssh-config"
+known_hosts="$temp/vagrant-known-hosts"
+
+prep_config() {
+	prep_temp
+	if ! [[ -f "$config" ]]; then
+		reset_config
+	# if file older than 5 minutes
+	elif [[ "$(date +%s)" -gt "$(($(stat -c %Y "$config") + 300))" ]]; then
+		reset_config
+	# if file zero bytes
+	elif [[ "$(stat -c %s "$config")" == "0" ]]; then
+		reset_config
+	fi
+}
+
+reset_config() {
+	rm -f -- "$config"
+	get_ssh_config > "$config"
+}
+
+prep_temp() {
+	if ! [[ -d "$temp" ]]; then
+		mkdir -p -- "$temp"
+	fi
+}
+
+coverage_prefix() {
+	if [[ $TIDIER_COV = 'true' ]]; then
+		echo export TIDIER_COV=true';'
+	fi
+}
+
+run_in_vm() {
+	prep_config
+	args=(
+		-o 'LogLevel=quiet' # ignore "Warning: Permanently added ... to the list of known hosts."
+		-F "$config" # use the config file supplied by vagrant
+		default # connect to the default vagrant host
+		-- # pass the rest to the VM
+		$(coverage_prefix) # turn on coverage reporting if requested
+		'cd /vagrant;' # move to the correct directory
+		"$@" # execute whatever is actually requested
+	)
+	ssh "${args[@]}"
+}
+
+get_ssh_config() {
+	# exec "vagrant" with a clean environment to avoid it picking up bundler config
+	env -i HOME="$HOME" vagrant ssh-config 
+}
+
+run_in_vm "$@"

@@ -1,0 +1,27 @@
+{"x-emacs": " -*- mode: js -*- ",
+	"name": "repoproxy",
+	"description": "Mirror repositories while you proxy them",
+	"version": "0.0.0",
+	"dependencies": {
+		"mocha": "*",
+		"chai": "*",
+		"chai-as-promised": "*",
+		"mocha-as-promised": "*",
+		"sinon-chai": "*",
+		"sinon": "*",
+		"optimist": "*",
+		"underscore": "*",
+		"underscore.string": "*",
+		"nock": "*",
+		"findit": "*",
+		"q": "*",
+		"fake-fs": "*"
+	},
+	"engines": {
+		"node": "0.10.x"
+	},
+	"author": "David Schoen <dave@lyte.id.au>",
+	"scripts": {
+		"test": "node_modules/mocha/bin/mocha --colors --recursive spec --reporter spec"
+	}
+}
