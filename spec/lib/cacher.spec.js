@@ -42,15 +42,19 @@ describe('Cacher', function() {
 		return expect(cacher.createReadStream("non-existant-file")).to.become(false);
 	});
 
-	it("should become true when asked for a ReadStream for a valid file", function(done) {
-	   	cacher.createWriteStream("existing-file").then(function(writer) {
-			writer.end('foo');
+	describe("when there is a valid file", function() {
+		beforeEach(function(done) {
+			cacher.createWriteStream("existing-file").then(function(writer) {
+				writer.end('foo');
 
-			writer.on('finish', function() {
-				expect(cacher.createReadStream("existing-file")).to.not.become(false)
-				.then(function() { done(); })
-				.fail(function(err) { done(err); });
+				writer.on('finish', function() {
+					done();
+				});
 			});
+		});
+
+		it("should become true when asked for a ReadStream for a valid file", function(done) {
+			return expect(cacher.createReadStream("existing-file")).to.not.become(false);
 		});
 	});
 });
