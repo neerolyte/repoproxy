@@ -4,7 +4,9 @@
 	"version": "0.0.0",
 	"dependencies": {
 		"q": "*",
-		"mkdirp": "*"
+		"mkdirp": "*",
+		"underscore": "*",
+		"underscore.string": "*"
 	},
 	"devDependencies": {
 		"wrench": "*",
