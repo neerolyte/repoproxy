@@ -61,7 +61,8 @@ describe('Proxy', function() {
 
 			sinon.spy(proxy, 'application');
 
-			var doRequest = function() {
+			return proxy.listen()
+			.then(function() {
 				return HTTP.request({
 					port: proxy.address().port,
 					host: '127.0.0.1',
@@ -70,10 +71,7 @@ describe('Proxy', function() {
 					},
 					path: "/foo",
 				});
-			};
-
-			return proxy.listen()
-			.then(doRequest)
+			})
 			.then(function(res) {
 				return res.body.read();
 			}).then(function(body) {
@@ -81,6 +79,29 @@ describe('Proxy', function() {
 				expect(proxy.application.calledOnce).to.be.true;
 			}).then(function() {
 				return expect(FS.read(cacheDir + '/data/example/foo')).to.become("bar");
+			});
+		});
+
+		it("returns a cached request", function() {
+			return FS.makeTree(cacheDir + '/data/example')
+			.then(function() {
+				FS.write(cacheDir + '/data/example/foo', 'bar')
+			}).then(function() {
+				return proxy.listen();
+			}).then(function() {
+				return HTTP.request({
+					port: proxy.address().port,
+					host: '127.0.0.1',
+					headers: {
+						host: 'example.com',
+					},
+					path: "/foo",
+				});
+			})
+			.then(function(res) {
+				return res.body.read();
+			}).then(function(body) {
+				expect(body.toString('utf-8')).to.equal('bar');
 			});
 		});
 	});
