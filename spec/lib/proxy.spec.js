@@ -5,6 +5,8 @@ describe('Proxy', function() {
 	var Q = require('q');
 	var HTTP = require('q-io/http');
 	var sinon = require('sinon');
+	var FS = require('q-io/fs');
+	var cacheDir = Fixture.cacheDir;
 
 	var nock = require('nock');
 	var Proxy = require(LIB_DIR + '/proxy.js');
@@ -13,7 +15,7 @@ describe('Proxy', function() {
 		var scope = nock('http://example.com')
 			.get('/').reply(200, 'foo');
 
-		var proxy = new Proxy();
+		var proxy = new Proxy({ cacheDir: cacheDir });
 
 		sinon.spy(proxy, 'application');
 
@@ -35,24 +37,27 @@ describe('Proxy', function() {
 	});
 
 	describe("when there is a configured repo", function() {
-		var proxy = new Proxy();
+		var proxy = new Proxy({ cacheDir: cacheDir });
 
 		beforeEach(function() {
 			proxy.addRepo({
 				name: "example",
 				prefixes: [ "http://example.com/" ],
 			});
-			return proxy.listen();
+			return FS.isDirectory(cacheDir)
+			.then(function(isDir) {
+				if (isDir) return FS.removeTree(cacheDir);
+			}).then(function() {
+				return proxy.listen();
+			});
 		});
 		afterEach(function() {
+			return FS.removeTree(cacheDir);
 		});
 
 		it("caches a request", function() {
-			return; // TODO: requires the cacheable file representation to work
 			var scope = nock('http://example.com')
-				.get('/').reply(200, 'foo');
-
-			var proxy = new Proxy();
+				.get('/foo').reply(200, 'bar');
 
 			sinon.spy(proxy, 'application');
 
@@ -63,17 +68,19 @@ describe('Proxy', function() {
 					headers: {
 						host: 'example.com',
 					},
+					path: "/foo",
 				});
 			};
 
 			return proxy.listen()
-			.then(doRequest) // do the request twice, the second should come out of cache
 			.then(doRequest)
 			.then(function(res) {
 				return res.body.read();
 			}).then(function(body) {
-				expect(body.toString('utf-8')).to.equal('foo');
+				expect(body.toString('utf-8')).to.equal('bar');
 				expect(proxy.application.calledOnce).to.be.true;
+			}).then(function() {
+				return expect(FS.read(cacheDir + '/data/example/foo')).to.become("bar");
 			});
 		});
 	});
