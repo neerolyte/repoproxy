@@ -4,6 +4,7 @@ describe('Cacher', function() {
 	var util = require('util');
 
 	// TODO: add support to fake-fs for file streams so we can use fake-fs during testing
+	// or maybe switch to https://github.com/kriskowal/q-io/ - mocks and the ability to jail the FS!
 	var fs = require('fs');
 	var path = require('path');
 	var wrench = require('wrench');

@@ -19,7 +19,7 @@ Vagrant::configure('2') do |config|
     puppet.manifest_file  = "base.pp"
   end
   
-  config.vm.provision :shell, :inline => "cd /vagrant/ && npm update"
+  config.vm.provision :shell, :inline => "cd /vagrant/ && npm install"
 
   config.vm.synced_folder(".", "/vagrant")
   config.vm.provider "virtualbox" do |v|
