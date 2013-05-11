@@ -9,3 +9,6 @@ chai.use(require("chai-as-promised"));
 chai.use(require("sinon-chai"));
 module.exports.expect = chai.expect;
 require("mocha-as-promised")();
+
+module.exports.cacheDir = path.resolve(__dirname, 'temp');
+

@@ -33,4 +33,48 @@ describe('Proxy', function() {
 			expect(proxy.application.calledOnce).to.be.true;
 		});
 	});
+
+	describe("when there is a configured repo", function() {
+		var proxy = new Proxy();
+
+		beforeEach(function() {
+			proxy.addRepo({
+				name: "example",
+				prefixes: [ "http://example.com/" ],
+			});
+			return proxy.listen();
+		});
+		afterEach(function() {
+		});
+
+		it("caches a request", function() {
+			return; // TODO: requires the cacheable file representation to work
+			var scope = nock('http://example.com')
+				.get('/').reply(200, 'foo');
+
+			var proxy = new Proxy();
+
+			sinon.spy(proxy, 'application');
+
+			var doRequest = function() {
+				return HTTP.request({
+					port: proxy.address().port,
+					host: '127.0.0.1',
+					headers: {
+						host: 'example.com',
+					},
+				});
+			};
+
+			return proxy.listen()
+			.then(doRequest) // do the request twice, the second should come out of cache
+			.then(doRequest)
+			.then(function(res) {
+				return res.body.read();
+			}).then(function(body) {
+				expect(body.toString('utf-8')).to.equal('foo');
+				expect(proxy.application.calledOnce).to.be.true;
+			});
+		});
+	});
 });

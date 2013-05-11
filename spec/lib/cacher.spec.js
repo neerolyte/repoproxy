@@ -3,59 +3,37 @@ describe('Cacher', function() {
 	var expect = Fixture.expect;
 	var util = require('util');
 
-	// TODO: add support to fake-fs for file streams so we can use fake-fs during testing
-	// or maybe switch to https://github.com/kriskowal/q-io/ - mocks and the ability to jail the FS!
-	var fs = require('fs');
-	var path = require('path');
-	var wrench = require('wrench');
+	var FS = require('q-io/fs');
 
 	var Cacher = require(LIB_DIR + '/cacher.js');
-	var cacher;
+	var CacheFile = require(LIB_DIR + '/cacheFile.js');
+	var cacheDir = Fixture.cacheDir;
+	var cacher = new Cacher({ cacheDir: cacheDir });
 
-	var cacheDir = path.resolve(__dirname, '../temp');
 
 	beforeEach(function() {
-		wrench.rmdirSyncRecursive(cacheDir, true);
-		fs.mkdirSync(cacheDir);
-		cacher = new Cacher({
-			cacheDir: cacheDir
+		return FS.isDirectory(cacheDir)
+		.then(function(isDir) {
+			if (isDir) return FS.removeTree(cacheDir);
+		}).then(function() {
+			return FS.makeTree(cacheDir + '/data');
 		});
 	});
 
 	after(function() {
-		wrench.rmdirSyncRecursive(cacheDir, true);
+		return FS.removeTree(cacheDir);
 	});
 
-	it("should store new entries", function(done) {
-		// get cacher to give us a write stream for a specified path and options list
-		// http://nodejs.org/api/fs.html#fs_fs_createwritestream_path_options
-	   	cacher.createWriteStream("somefile").then(function(writer) {
-			writer.end('foo');
-
-			writer.on('finish', function() {
-				expect(fs.readFileSync(cacheDir + '/data/somefile', 'utf8')).to.deep.eql('foo');
-				done();
-			});
-		});
-	});
-
-	it("should become false when asked for a ReadStream for a missing path", function() {
-		return expect(cacher.createReadStream("non-existant-file")).to.become(false);
-	});
-
-	describe("when there is a valid file", function() {
-		beforeEach(function(done) {
-			cacher.createWriteStream("existing-file").then(function(writer) {
-				writer.end('foo');
-
-				writer.on('finish', function() {
-					done();
-				});
-			});
-		});
-
-		it("should become true when asked for a ReadStream for a valid file", function(done) {
-			return expect(cacher.createReadStream("existing-file")).to.not.become(false);
+	it("can create a CacheFile with the cacheDir set", function() {
+		return FS.write(cacheDir + '/data/foo', 'bar')
+		.then(function() {
+			return cacher.getCacheFile("foo");
+		}).then(function(cacheFile) {
+			return cacheFile.getReader();
+		}).then(function(reader) {
+			return reader.read();
+		}).then(function(buf) {
+			expect(buf.toString("utf-8")).to.equal("bar");
 		});
 	});
 });
