@@ -1,6 +1,6 @@
 # Repoproxy
 
-[![Build Status](https://travis-ci.org/[neerolyte]/[repoproxy].png)](https://travis-ci.org/[neerolyte]/[repoproxy])
+[![Build Status](https://travis-ci.org/neerolyte/repoproxy.png)](https://travis-ci.org/neerolyte/repoproxy)
 
 I just wanted a simple mirroring proxy server for repositories.
 
