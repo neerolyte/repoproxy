@@ -28,13 +28,22 @@ describe('RepoManager', function() {
 		it("can retrieve the repo info", function() {
 			return expect(
 				repoManager.getRepoInfo("http://example.com/some-file.txt")
-			).to.deep.become({ path: "example/some-file.txt" });
+				.then(function(info) {
+					return info.path;
+				})
+			).to.deep.become("example/some-file.txt");
 		});
 
 		it("can get the cache file", function() {
 			return expect(
 				repoManager.getCacheFile("http://example.com/some-file.txt")
 			).to.eventually.be.an.instanceof(CacheFile);
+		});
+
+		it("doesn't get the cache file for uncacheable requestes", function() {
+			return expect(
+				repoManager.getCacheFile("http://example.com/foo/")
+			).to.become();
 		});
 	});
 });

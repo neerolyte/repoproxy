@@ -15,9 +15,17 @@ describe('Repo', function() {
 			prefixes: [ "http://example.com/" ],
 		});
 		expect(
-			repo.getInfo("http://example.com/foo.txt")
-		).to.eql({
-			path: 'example/foo.txt',
+			repo.getInfo("http://example.com/foo.txt").path
+		).to.eql('example/foo.txt');
+	});
+
+	it("always ignores directories", function() {
+		var repo = new Repo({
+			name: 'example',
+			prefixes: [ "http://example.com/" ],
 		});
+		expect(
+			repo.getInfo("http://example.com/foo/").cache
+		).to.equal(false);
 	});
 });

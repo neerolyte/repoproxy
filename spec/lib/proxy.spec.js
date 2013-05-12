@@ -37,9 +37,10 @@ describe('Proxy', function() {
 	});
 
 	describe("when there is a configured repo", function() {
-		var proxy = new Proxy({ cacheDir: cacheDir });
+		var proxy;
 
 		beforeEach(function() {
+			proxy = new Proxy({ cacheDir: cacheDir });
 			proxy.addRepo({
 				name: "example",
 				prefixes: [ "http://example.com/" ],
@@ -52,7 +53,10 @@ describe('Proxy', function() {
 			});
 		});
 		afterEach(function() {
-			return FS.removeTree(cacheDir);
+			return FS.isDirectory(cacheDir)
+			.then(function(isDir) {
+				if (isDir) return FS.removeTree(cacheDir);
+			});
 		});
 
 		it("caches a request", function() {
@@ -79,6 +83,58 @@ describe('Proxy', function() {
 				expect(proxy.application.calledOnce).to.be.true;
 			}).then(function() {
 				return expect(FS.read(cacheDir + '/data/example/foo')).to.become("bar");
+			});
+		});
+
+		it("caches a deep request", function() {
+			var scope = nock('http://example.com')
+				.get('/foo/bar/baz').reply(200, 'foo');
+
+			sinon.spy(proxy, 'application');
+
+			return proxy.listen()
+			.then(function() {
+				return HTTP.request({
+					port: proxy.address().port,
+					host: '127.0.0.1',
+					headers: {
+						host: 'example.com',
+					},
+					path: "/foo/bar/baz",
+				});
+			})
+			.then(function(res) {
+				return res.body.read();
+			}).then(function(body) {
+				expect(body.toString('utf-8')).to.equal('foo');
+				expect(proxy.application.calledOnce).to.be.true;
+			}).then(function() {
+				return expect(FS.read(cacheDir + '/data/example/foo/bar/baz')).to.become("foo");
+			});
+		});
+
+		it("copes with a directory", function() {
+			var scope = nock('http://example.com')
+				.get('/foo/bar/').reply(200, 'foo');
+
+			sinon.spy(proxy, 'application');
+
+			return proxy.listen()
+			.then(function() {
+				return HTTP.request({
+					port: proxy.address().port,
+					host: '127.0.0.1',
+					headers: {
+						host: 'example.com',
+					},
+					path: "/foo/bar/",
+				});
+			})
+			.then(function(res) {
+				return res.body.read();
+			}).then(function(body) {
+				expect(body.toString('utf-8')).to.equal('foo');
+				expect(proxy.application.calledOnce).to.be.true;
 			});
 		});
 
