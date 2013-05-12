@@ -22,8 +22,6 @@ describe('CacheFile', function() {
 			if (isDir) return FS.removeTree(cacheDir);
 		}).then(function() {
 			return FS.makeTree(cacheDir);
-		}).then(function() {
-			return FS.makeTree(cacheDir + '/data');
 		});
 	});
 
@@ -79,6 +77,28 @@ describe('CacheFile', function() {
 			}).then(function(buf) {
 				expect(buf.toString("utf-8")).to.equal("foo");
 			});
+		});
+	});
+
+	it("stores cache metadata", function() {
+		var cacheFile = new CacheFile(cacheDir, 'somefile');
+		return cacheFile.getWriter({ foo: "bar" })
+		.then(function(writer) {
+			return writer.write("baz")
+			.then(function() {
+				return writer.close();
+			});
+		}).then(function() {
+			return Q.all([
+				cacheFile.getReader(),
+				cacheFile.getMeta(),
+			]);
+		}).then(function(res) {
+			var reader = res[0], meta = res[1];
+			expect(meta).to.eql({ foo: "bar" });
+			return reader.read();
+		}).then(function(buf) {
+			expect(buf.toString("utf-8")).to.equal("baz");
 		});
 	});
 });
