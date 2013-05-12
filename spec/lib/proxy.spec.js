@@ -11,7 +11,7 @@ describe('Proxy', function() {
 	var nock = require('nock');
 	var Proxy = require(LIB_DIR + '/proxy.js');
 
-	it("should silently pass on unknown URLs", function() {
+	it("silently passes on unknown URLs", function() {
 		var scope = nock('http://example.com')
 			.get('/').reply(200, 'foo');
 
@@ -36,16 +36,13 @@ describe('Proxy', function() {
 		});
 	});
 
-	describe("when there is a configured repo", function() {
+	describe("when there is some cache configuration", function() {
 		var proxy;
 
 		beforeEach(function() {
 			proxy = new Proxy({
 				cacheDir: cacheDir,
-				repos: [{
-					name: "example",
-					prefixes: [ "http://example.com/" ],
-				}]
+				hosts: [ "example.com" ],
 			});
 			return FS.isDirectory(cacheDir)
 			.then(function(isDir) {
@@ -54,6 +51,7 @@ describe('Proxy', function() {
 				return proxy.listen();
 			});
 		});
+
 		afterEach(function() {
 			return FS.isDirectory(cacheDir)
 			.then(function(isDir) {
@@ -84,7 +82,7 @@ describe('Proxy', function() {
 				expect(body.toString('utf-8')).to.equal('bar');
 				expect(proxy.application.calledOnce).to.be.true;
 			}).then(function() {
-				return expect(FS.read(cacheDir + '/data/example/foo')).to.become("bar");
+				return expect(FS.read(cacheDir + '/data/example.com/foo')).to.become("bar");
 			});
 		});
 
@@ -111,7 +109,7 @@ describe('Proxy', function() {
 				expect(body.toString('utf-8')).to.equal('foo');
 				expect(proxy.application.calledOnce).to.be.true;
 			}).then(function() {
-				return expect(FS.read(cacheDir + '/data/example/foo/bar/baz')).to.become("foo");
+				return expect(FS.read(cacheDir + '/data/example.com/foo/bar/baz')).to.become("foo");
 			});
 		});
 
@@ -141,9 +139,9 @@ describe('Proxy', function() {
 		});
 
 		it("returns a cached request", function() {
-			return FS.makeTree(cacheDir + '/data/example')
+			return FS.makeTree(cacheDir + '/data/example.com')
 			.then(function() {
-				FS.write(cacheDir + '/data/example/foo', 'bar')
+				FS.write(cacheDir + '/data/example.com/foo', 'bar')
 			}).then(function() {
 				return proxy.listen();
 			}).then(function() {
