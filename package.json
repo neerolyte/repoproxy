@@ -7,7 +7,8 @@
 		"q-io": "1.6.x",
 		"underscore": "1.4.x",
 		"underscore.string": "2.3.x",
-		"js-yaml": "2.0.x"
+		"js-yaml": "2.0.x",
+		"moment": "2.0.x"
 	},
 	"devDependencies": {
 		"mocha": "1.9.x",

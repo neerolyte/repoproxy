@@ -29,7 +29,7 @@ echo "port: $port"
 # start up a repoproxy
 ../../repoproxy.js &
 repoproxy_pid=$!
-sleep 0.5
+sleep 1
 
 http_proxy="http://localhost:3142/" wget http://localhost:$port/a_file -O slow_server_out.tmp
 

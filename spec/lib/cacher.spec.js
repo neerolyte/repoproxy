@@ -2,6 +2,7 @@ describe('Cacher', function() {
 	var Fixture = require('../fixture');
 	var expect = Fixture.expect;
 	var util = require('util');
+	var sinon = require('sinon');
 
 	var Cacher = require(LIB_DIR + '/cacher.js');
 	var CacheFile = require(LIB_DIR + '/cacheFile.js');

@@ -10,6 +10,8 @@ describe('CacheFile', function() {
 	var FS = require('q-io/fs');
 	var cacheDir = Fixture.cacheDir;
 	var Q = require('q');
+	var sinon = require('sinon');
+	var moment = require('moment');
 
 	var CacheFile = require(LIB_DIR + '/cacheFile.js');
 
@@ -95,10 +97,68 @@ describe('CacheFile', function() {
 			]);
 		}).then(function(res) {
 			var reader = res[0], meta = res[1];
-			expect(meta).to.eql({ foo: "bar" });
+			expect(meta.foo).to.eql("bar");
 			return reader.read();
 		}).then(function(buf) {
 			expect(buf.toString("utf-8")).to.equal("baz");
+		});
+	});
+
+	describe("expiry", function() {
+		var clock;
+		beforeEach(function() {
+			clock = sinon.useFakeTimers();
+		});
+
+		afterEach(function() {
+			clock.restore();
+		});
+
+		it("is expired when file is missing", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+			return expect(cacheFile.expired()).to.become(true);
+		});
+
+		it("defaults to 30 minutes", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+
+			return cacheFile.getWriter()
+			.then(function(writer) {
+				return writer.write("foo")
+				.then(function() {
+					return writer.close();
+				});
+			}).then(function() {
+				clock.tick(30*60*1000);
+				return cacheFile.expired();
+			}).then(function(expired) {
+				expect(expired).to.equal(false);
+				clock.tick(1);
+				return cacheFile.expired();
+			}).then(function(expired) {
+				expect(expired).to.equal(true);
+			});
+		});
+
+		it("can be configured", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+
+			return cacheFile.getWriter({ expiry: moment().add('hours', 10) })
+			.then(function(writer) {
+				return writer.write("foo")
+				.then(function() {
+					return writer.close();
+				});
+			}).then(function() {
+				clock.tick(10*60*60*1000);
+				return cacheFile.expired();
+			}).then(function(expired) {
+				expect(expired).to.equal(false);
+				clock.tick(1);
+				return cacheFile.expired();
+			}).then(function(expired) {
+				expect(expired).to.equal(true);
+			});
 		});
 	});
 });

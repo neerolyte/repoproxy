@@ -27,7 +27,7 @@ port=$(cat server_port.tmp)
 # start up a repoproxy
 ../../repoproxy.js &
 repoproxy_pid=$!
-sleep 0.5
+sleep 1
 
 http_proxy="http://localhost:3142/" wget http://localhost:$port/the-right-url -O server_out.tmp
 
