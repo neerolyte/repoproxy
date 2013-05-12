@@ -163,4 +163,18 @@ describe('Proxy', function() {
 			});
 		});
 	});
+
+	describe("normalising request urls", function() {
+		it("can cope with nested http:// in path/url", function() {
+			// this is what happens if you do
+			// http_proxy="..." curl ...
+			var req = {
+				path: 'http://example.com/',
+				url: 'http://example.com/http://example.com/',
+			};
+			Proxy.prototype.normaliseRequest(req);
+
+			expect(req.url).to.equal('http://example.com/');
+		});
+	});
 });
