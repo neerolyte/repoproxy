@@ -40,10 +40,12 @@ describe('Proxy', function() {
 		var proxy;
 
 		beforeEach(function() {
-			proxy = new Proxy({ cacheDir: cacheDir });
-			proxy.addRepo({
-				name: "example",
-				prefixes: [ "http://example.com/" ],
+			proxy = new Proxy({
+				cacheDir: cacheDir,
+				repos: [{
+					name: "example",
+					prefixes: [ "http://example.com/" ],
+				}]
 			});
 			return FS.isDirectory(cacheDir)
 			.then(function(isDir) {

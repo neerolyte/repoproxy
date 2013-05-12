@@ -6,7 +6,8 @@
 		"q": "0.9.x",
 		"q-io": "1.6.x",
 		"underscore": "1.4.x",
-		"underscore.string": "2.3.x"
+		"underscore.string": "2.3.x",
+		"js-yaml": "2.0.x"
 	},
 	"devDependencies": {
 		"wrench": "1.5.x",

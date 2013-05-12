@@ -1,0 +1,11 @@
+---
+port: 3142
+cacheDir: temp
+repos: [
+    {
+        name: reponame,
+        prefixes: [
+            http://example.com/
+        ]
+    },
+    ]
