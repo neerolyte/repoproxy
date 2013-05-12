@@ -39,4 +39,4 @@ status=$?
 
 cleanup
 
-exit $?
+exit $status
