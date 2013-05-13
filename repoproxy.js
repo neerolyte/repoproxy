@@ -10,7 +10,7 @@ var config = yaml.load(
 
 // if cacheDir is relative, make it absolute
 if (!config.cacheDir.match(/^\//)) {
-	config.cacheDir = __dirname + '/' + config.cacheDir;
+	config.cacheDir = process.cwd() + '/' + config.cacheDir;
 }
 
 var proxy = new Proxy(config);

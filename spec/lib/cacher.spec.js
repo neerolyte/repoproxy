@@ -35,6 +35,15 @@ describe('Cacher', function() {
 			).to.deep.become("example.com/some-file.txt");
 		});
 
+		it("can retrieve cache info if url has a port", function() {
+			return expect(
+				cacher.getInfo("http://example.com:1234/some-file.txt")
+				.then(function(info) {
+					return info.path;
+				})
+			).to.deep.become("example.com/some-file.txt");
+		});
+
 		it("can get the cache file", function() {
 			return expect(
 				cacher.getCacheFile("http://example.com/some-file.txt")

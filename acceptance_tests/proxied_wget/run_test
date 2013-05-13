@@ -2,11 +2,11 @@
 
 cd "$(dirname "$0")"
 
-rm -f -- *.tmp
+rm -rf -- *.tmp temp
 
 cleanup() {
 	kill $server_pid $repoproxy_pid > /dev/null 2>&1
-	rm -f -- *.tmp
+	rm -rf -- *.tmp temp
 }
 trap cleanup SIGINT SIGTERM
 
