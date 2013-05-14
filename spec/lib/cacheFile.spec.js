@@ -51,24 +51,60 @@ describe('CacheFile', function() {
 					return writer.close();
 				});
 			}).then(function() {
+				return cacheFile.save();
+			}).then(function() {
 				return expect(
 					FS.read(cacheDir + '/data/somefile')
 				).to.become("baz");
+			});
+		});
+
+		it("only places data in meta/data after save() is called", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+			return cacheFile.getWriter()
+			.then(function(writer) {
+				return expect(FS.isFile(cacheFile.getPath())).to.become(false)
+				.then(function() {
+					return writer.write("foo");
+				}).then(function() {
+					return writer.close();
+				});
+			}).then(function() {
+				return expect(FS.isFile(cacheFile.getPath())).to.become(false);
+			}).then(function() {
+				return cacheFile.save();
+			}).then(function() {
+				return expect(FS.isFile(cacheFile.getPath())).to.become(true);
 			});
 		});
 	});
 
 	describe("with an existing file", function() {
 		beforeEach(function() {
-			return FS.makeTree(cacheDir + '/data')
-			.then(function() {
-				return FS.write(cacheDir + '/data/somefile', 'foo');
+			return Q.all([
+				FS.makeTree(cacheDir + '/data'),
+				FS.makeTree(cacheDir + '/meta'),
+			]).then(function() {
+				return Q.all([
+					FS.write(cacheDir + '/data/somefile', 'foo'),
+					FS.write(cacheDir + '/meta/somefile', JSON.stringify({
+						expires: JSON.stringify(moment().add('hours', 1)),
+					})),
+				]);
 			});
 		});
 
 		it("knows file exists", function() {
 			var cacheFile = new CacheFile(cacheDir, 'somefile');
 			return expect(cacheFile.exists()).to.become(true);
+		});
+
+		it("knows it doesn't exist if meta is missing", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+			return FS.remove(cacheDir + '/meta/somefile')
+			.then(function() {
+				return expect(cacheFile.exists()).to.become(false);
+			});
 		});
 
 		it("produces a readble stream", function() {
@@ -82,25 +118,29 @@ describe('CacheFile', function() {
 		});
 	});
 
-	it("stores cache metadata", function() {
-		var cacheFile = new CacheFile(cacheDir, 'somefile');
-		return cacheFile.getWriter({ foo: "bar" })
-		.then(function(writer) {
-			return writer.write("baz")
-			.then(function() {
-				return writer.close();
+	describe('metadata', function() {
+		it("stores", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+			return cacheFile.getWriter()
+			.then(function(writer) {
+				return writer.write("baz")
+				.then(function() {
+					return writer.close();
+				});
+			}).then(function() {
+				return cacheFile.save({ foo: "bar" });
+			}).then(function() {
+				return Q.all([
+					cacheFile.getReader(),
+					cacheFile.getMeta(),
+				]);
+			}).then(function(res) {
+				var reader = res[0], meta = res[1];
+				expect(meta.foo).to.eql("bar");
+				return reader.read();
+			}).then(function(buf) {
+				expect(buf.toString("utf-8")).to.equal("baz");
 			});
-		}).then(function() {
-			return Q.all([
-				cacheFile.getReader(),
-				cacheFile.getMeta(),
-			]);
-		}).then(function(res) {
-			var reader = res[0], meta = res[1];
-			expect(meta.foo).to.eql("bar");
-			return reader.read();
-		}).then(function(buf) {
-			expect(buf.toString("utf-8")).to.equal("baz");
 		});
 	});
 
@@ -129,11 +169,13 @@ describe('CacheFile', function() {
 					return writer.close();
 				});
 			}).then(function() {
-				clock.tick(30*60*1000);
+				return cacheFile.save();
+			}).then(function() {
+				clock.tick(30*60*1000-1000);
 				return cacheFile.expired();
 			}).then(function(expired) {
 				expect(expired).to.equal(false);
-				clock.tick(1);
+				clock.tick(1001);
 				return cacheFile.expired();
 			}).then(function(expired) {
 				expect(expired).to.equal(true);
@@ -143,18 +185,20 @@ describe('CacheFile', function() {
 		it("can be configured", function() {
 			var cacheFile = new CacheFile(cacheDir, 'somefile');
 
-			return cacheFile.getWriter({ expiry: moment().add('hours', 10) })
+			return cacheFile.getWriter()
 			.then(function(writer) {
 				return writer.write("foo")
 				.then(function() {
 					return writer.close();
 				});
 			}).then(function() {
-				clock.tick(10*60*60*1000);
+				return cacheFile.save({ expiry: moment().add('hours', 10) });
+			}).then(function() {
+				clock.tick(10*60*60*1000-1000);
 				return cacheFile.expired();
 			}).then(function(expired) {
 				expect(expired).to.equal(false);
-				clock.tick(1);
+				clock.tick(1001);
 				return cacheFile.expired();
 			}).then(function(expired) {
 				expect(expired).to.equal(true);
