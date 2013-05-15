@@ -32,6 +32,7 @@ sleep 1
 # Request the page 5 times
 (
 	for i in {1..5}; do
+		sleep 0.1
 	    http_proxy="http://localhost:3142/" wget http://localhost:$port/the-right-url -O server_out_$i.tmp &
 	done
 	wait

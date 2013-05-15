@@ -213,6 +213,9 @@ describe('CacheFile', function() {
 				reader = r;
 				return writer.write("foo");
 			}).then(function() {
+				setTimeout(function() {
+					writer.close();
+				}, 10);
 				return reader.read();
 			}).then(function(buf) {
 				expect(buf.toString('utf-8')).to.equal('foo');
