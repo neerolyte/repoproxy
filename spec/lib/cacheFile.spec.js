@@ -12,6 +12,7 @@ describe('CacheFile', function() {
 	var Q = require('q');
 	var sinon = require('sinon');
 	var moment = require('moment');
+	var util = require('util');
 
 	var CacheFile = require(LIB_DIR + '/cacheFile.js');
 
@@ -130,16 +131,9 @@ describe('CacheFile', function() {
 			}).then(function() {
 				return cacheFile.save({ foo: "bar" });
 			}).then(function() {
-				return Q.all([
-					cacheFile.getReader(),
-					cacheFile.getMeta(),
-				]);
-			}).then(function(res) {
-				var reader = res[0], meta = res[1];
+				return cacheFile.getMeta();
+			}).then(function(meta) {
 				expect(meta.foo).to.eql("bar");
-				return reader.read();
-			}).then(function(buf) {
-				expect(buf.toString("utf-8")).to.equal("baz");
 			});
 		});
 	});
@@ -204,5 +198,25 @@ describe('CacheFile', function() {
 				expect(expired).to.equal(true);
 			});
 		});
+	});
+
+	describe("collapsing", function() {
+		it("provides a reader for a partial file", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+			var reader, writer;
+
+			return cacheFile.getWriter()
+			.then(function(w) {
+				writer = w;
+				return cacheFile.getReader();
+			}).then(function(r) {
+				reader = r;
+				return writer.write("foo");
+			}).then(function() {
+				return reader.read();
+			}).then(function(buf) {
+				expect(buf.toString('utf-8')).to.equal('foo');
+			});
+		});// */
 	});
 });
