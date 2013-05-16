@@ -220,6 +220,27 @@ describe('CacheFile', function() {
 			}).then(function(buf) {
 				expect(buf.toString('utf-8')).to.equal('foo');
 			});
-		});// */
+		});
+
+		it("still reads after save", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+			var reader, writer;
+
+			return cacheFile.getWriter()
+			.then(function(w) {
+				writer = w;
+				return writer.write("foo");
+			}).then(function() {
+				return writer.close();
+			}).then(function() {
+				return cacheFile.save();
+			}).then(function() {
+				return writer.getReader();
+			}).then(function(reader) {
+				return reader.read();
+			}).then(function(read) {
+				expect(read).to.equal("foo");
+			});
+		});
 	});
 });

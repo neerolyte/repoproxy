@@ -68,7 +68,7 @@ describe("ReadableFileWriter", function() {
 		it("gets content before writer completes", function() {
 			var writer, reader;
 			var content = '';
-			var readerWaitDeferred = Q.defer();;
+			var readerWaitDeferred = Q.defer();
 			
 			return ReadableFileWriter.create(cacheDir + '/foo')
 			.then(function(w) {
@@ -109,6 +109,21 @@ describe("ReadableFileWriter", function() {
 				return readerWaitDeferred.promise;
 			}).then(function() {
 				return expect(content).to.equal("foo");
+			});
+		});
+	});
+
+	describe("move()", function() {
+		it("actually moves the file", function() {
+			var writer;
+			return ReadableFileWriter.create(cacheDir + '/foo')
+			.then(function(w) {
+				writer = w;
+				return writer.close();
+			}).then(function() {
+				return writer.move(cacheDir + '/bar');
+			}).then(function() {
+				return expect(FS.isFile(cacheDir + '/bar')).to.become(true);
 			});
 		});
 	});
