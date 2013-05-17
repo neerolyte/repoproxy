@@ -7,6 +7,7 @@ describe('Proxy', function() {
 	var sinon = require('sinon');
 	var FS = require('q-io/fs');
 	var cacheDir = Fixture.cacheDir;
+	var moment = require('moment');
 
 	var nock = require('nock');
 	var Proxy = require(LIB_DIR + '/proxy.js');
@@ -139,9 +140,16 @@ describe('Proxy', function() {
 		});
 
 		it("returns a cached request", function() {
-			return FS.makeTree(cacheDir + '/data/example.com')
-			.then(function() {
-				FS.write(cacheDir + '/data/example.com/foo', 'bar')
+			return Q.all([
+				FS.makeTree(cacheDir + '/data/example.com'),
+				FS.makeTree(cacheDir + '/meta/example.com'),
+			]).then(function() {
+				return Q.all([
+					FS.write(cacheDir + '/data/example.com/foo', 'bar'),
+					FS.write(cacheDir + '/meta/example.com/foo', JSON.stringify({
+						expiry: moment().add('hours', 1)
+					})),
+				]);
 			}).then(function() {
 				return proxy.listen();
 			}).then(function() {

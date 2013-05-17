@@ -89,7 +89,7 @@ describe('CacheFile', function() {
 				return Q.all([
 					FS.write(cacheDir + '/data/somefile', 'foo'),
 					FS.write(cacheDir + '/meta/somefile', JSON.stringify({
-						expires: JSON.stringify(moment().add('hours', 1)),
+						expiry: moment().add('hours', 1),
 					})),
 				]);
 			});
@@ -108,7 +108,7 @@ describe('CacheFile', function() {
 			});
 		});
 
-		it("produces a readble stream", function() {
+		it("produces a readable stream", function() {
 			var cacheFile = new CacheFile(cacheDir, 'somefile');
 			return cacheFile.getReader()
 			.then(function(reader) {
@@ -238,6 +238,27 @@ describe('CacheFile', function() {
 				return writer.getReader();
 			}).then(function(reader) {
 				return reader.read();
+			}).then(function(read) {
+				expect(read).to.equal("foo");
+			});
+		});
+
+		it("provides a reader before writing has even started", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+			var writer;
+			var readProm;
+
+			return cacheFile.getReader()
+			.then(function(reader) {
+				readProm = reader.read();
+				return cacheFile.getWriter();
+			}).then(function(w) {
+				writer = w;
+				return writer.write("foo");
+			}).then(function() {
+				return writer.close();
+			}).then(function() {
+				return readProm;
 			}).then(function(read) {
 				expect(read).to.equal("foo");
 			});

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"
+
+rm -rf -- *.tmp temp
+
+cleanup() {
+	kill $server_pid $repoproxy_pid > /dev/null 2>&1
+	rm -rf -- *.tmp temp
+}
+trap cleanup SIGINT SIGTERM
+
+# start up a purposefully slow server, it'll just spam back "foofoofoofoo..."
+# for a while on the first request and reject any other requests
+./server.js &
+server_pid=$!
+
+# find the port the server is listening on
+for i in {0..5}; do
+	if [[ -f server_port.tmp ]]; then
+		break;
+	fi
+	sleep 0.5
+done
+port=$(cat server_port.tmp)
+
+# start up a repoproxy
+../../repoproxy.js &
+repoproxy_pid=$!
+sleep 1
+
+for i in {1..2}; do
+	http_proxy="http://localhost:3142/" wget http://localhost:$port/the-right-url -O server_out_$i.tmp
+done
+
+# check all the sums
+md5sum -c <(cat << EOF
+a795a8af86483adc2fcd82f76ff9e0e1  server_out_1.tmp
+a795a8af86483adc2fcd82f76ff9e0e1  server_out_2.tmp
+EOF
+)
+status=$?
+
+cleanup
+
+exit $status
