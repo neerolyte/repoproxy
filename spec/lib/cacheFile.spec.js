@@ -136,6 +136,37 @@ describe('CacheFile', function() {
 				expect(meta.foo).to.eql("bar");
 			});
 		});
+
+		it("recovers if metadata is corrupted", function() {
+			var cacheFile = new CacheFile(cacheDir, 'somefile');
+
+			return Q.all([
+				FS.makeTree(cacheDir + '/data'),
+				FS.makeTree(cacheDir + '/meta'),
+			]).then(function() {
+				return Q.all([
+					FS.write(cacheDir + '/data/somefile', 'foo'),
+					FS.write(cacheDir + '/meta/somefile', 'bar'),
+				]);
+			}).then(function() {
+				return expect(
+					cacheFile.getMeta()
+				).to.become({});
+			}).then(function() {
+				return cacheFile.getWriter();
+			}).then(function(writer) {
+				return writer.write('baz')
+				.then(function() {
+					return writer.close();
+				});
+			}).then(function() {
+				return cacheFile.save();
+			}).then(function() {
+				return FS.read(cacheDir + '/data/somefile');
+			}).then(function(read) {
+				expect(read.toString("utf-8")).to.equal("baz");
+			});
+		});
 	});
 
 	describe("expiry", function() {
