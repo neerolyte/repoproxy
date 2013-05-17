@@ -6,6 +6,11 @@ I just wanted a simple mirroring proxy server for repositories.
 
 apt-cacher is not simple enough.
 
+# Features
+
+ * collapsed forwarding
+ * mirrors upstream repositories
+
 # Storage layout
 
 A simple proxy needs a simple storage layout.
@@ -19,3 +24,4 @@ Repoproxy uses two directories:
 
  * Cache does not yet expire and it'll definitely cache stuff you don't want.
  * no test to ensure critical headers remain valid (i.e. Content-type)
+ * new files need to start returning immediately
