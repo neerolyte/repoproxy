@@ -55,12 +55,15 @@ cleanTemp().then ->
 .then (response) ->
 	response.body.forEach (chunk) ->
 		if (!first) then first = new Date() - start
-		content += chunk.toString('utf-8')
+		line = chunk.toString('utf-8')
+		content += line
 .then ->
 	finished = new Date() - start
 	console.log("First chunk recieved at #{first}ms")
 	console.log("Completed at #{finished}ms")
-	ok = first < 200 && finished < 1200
+	contentOk = !(content.match(/^((foo){341}\n){100}$/) is null)
+	console.log("Content ok: #{contentOk}")
+	ok = first < 200 && finished < 1200 && contentOk
 .finally ->
 	proxy.proc.kill('SIGTERM')
 	server.proc.kill('SIGTERM')
