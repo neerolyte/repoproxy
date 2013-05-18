@@ -8,7 +8,8 @@
 		"underscore": "1.4.x",
 		"underscore.string": "2.3.x",
 		"js-yaml": "2.0.x",
-		"moment": "2.0.x"
+		"moment": "2.0.x",
+		"coffee-script": "*"
 	},
 	"devDependencies": {
 		"mocha": "1.9.x",

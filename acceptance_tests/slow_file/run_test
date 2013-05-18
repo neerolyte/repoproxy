@@ -1,42 +1,79 @@
-#!/bin/bash
+#!/usr/bin/env coffee
 
-cd "$(dirname "$0")"
+ChildProcess = require('child_process')
+Q = require('q')
+HTTP = require('q-io/http')
+FS = require('q-io/fs')
 
-rm -rf -- *.tmp temp
+process.chdir(__dirname)
 
-cleanup() {
-	kill $slow_server_pid $repoproxy_pid > /dev/null 2>&1
-	rm -rf -- *.tmp temp
-}
-trap cleanup SIGINT SIGTERM
+port = ''
+start = null
+first = null
+content = ''
+ok = false
+server =
+	proc: ChildProcess.spawn('./server.coffee')
+	start: Q.defer()
+	exit: Q.defer()
+proxy =
+	proc: ChildProcess.spawn('../../repoproxy.js')
+	start: Q.defer()
+	exit: Q.defer()
 
-# start up a purposefully slow server (it'll just spam back "foofoofoofoo..."
-# for a while)
-./slow_http_server.js &
-slow_server_pid=$!
+server.proc.stdout.on 'data', (data) ->
+	port = data.toString('utf-8').trim()
+	server.start.resolve()
+server.proc.stdout.on 'close', -> server.exit.resolve()
+proxy.proc.stdout.on 'data', (data) ->
+	console.log(data.toString("utf-8").trim())
+	proxy.start.resolve()
+proxy.proc.stderr.on 'data', (data) ->
+	console.log(data.toString("utf-8").trim())
+proxy.proc.stdout.on 'close', -> proxy.exit.resolve()
 
-# find the port the server is listening on
-for i in {0..5}; do
-	if [[ -f slow_server_port.tmp ]]; then
-		break;
-	fi
-	sleep 0.5
-done
-port=$(cat slow_server_port.tmp)
+cleanTemp = ->
+	FS.isDirectory('temp')
+	.then (isDir) ->
+		if isDir then FS.removeTree('temp')
 
-echo "port: $port"
+cleanTemp().then ->
+	Q.all([
+		server.start.promise
+		proxy.start.promise
+	])
+.then ->
+	start = new Date()
+	HTTP.request({
+		port: '3142',
+		host: '127.0.0.1',
+		headers: {
+			host: "localhost:#{port}"
+		}
+		path: '/foo'
+	})
+.then (response) ->
+	response.body.forEach (chunk) ->
+		if (!first) then first = new Date() - start
+		content += chunk.toString('utf-8')
+.then ->
+	finished = new Date() - start
+	console.log("First chunk recieved at #{first}ms")
+	console.log("Completed at #{finished}ms")
+	ok = first < 200 && finished < 1200
+.finally ->
+	proxy.proc.kill('SIGTERM')
+	server.proc.kill('SIGTERM')
 
-# start up a repoproxy
-../../repoproxy.js &
-repoproxy_pid=$!
-sleep 1
 
-http_proxy="http://localhost:3142/" wget http://localhost:$port/a_file -O slow_server_out.tmp
+# Once everything's done, exit ungracefully if we found any issues
+Q.all([
+	server.exit.promise
+	proxy.exit.promise
+]).then ->
+	cleanTemp()
+.then ->
+	if not ok
+		console.log("Not ok")
+		process.exit(1)
 
-# check the md5sum
-cat ./slow_server_out.tmp | md5sum -c <(echo "a795a8af86483adc2fcd82f76ff9e0e1  -")
-status=$?
-
-cleanup
-
-exit $status

@@ -83,6 +83,8 @@ describe('Proxy', function() {
 				expect(body.toString('utf-8')).to.equal('bar');
 				expect(proxy.application.calledOnce).to.be.true;
 			}).then(function() {
+				return Q.all(proxy._active);
+			}).then(function() {
 				return expect(FS.read(cacheDir + '/data/example.com/foo')).to.become("bar");
 			});
 		});
@@ -109,6 +111,7 @@ describe('Proxy', function() {
 			}).then(function(body) {
 				expect(body.toString('utf-8')).to.equal('foo');
 				expect(proxy.application.calledOnce).to.be.true;
+				return Q.all(proxy._active);
 			}).then(function() {
 				return expect(FS.read(cacheDir + '/data/example.com/foo/bar/baz')).to.become("foo");
 			});

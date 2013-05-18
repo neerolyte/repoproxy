@@ -2,6 +2,9 @@
 
 cd "$(dirname "$0")"
 
+# put npm coffee script in $PATH
+export PATH="$(dirname "$PWD")/node_modules/coffee-script/bin:$PATH"
+
 for test in */run_test; do
 	"./$test"
 done
