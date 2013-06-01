@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
+require("coffee-script");
 var Proxy = require('./lib/proxy');
+var Cleaner = require('./lib/cleaner');
 var yaml = require('js-yaml');
 var fs = require('fs');
 
@@ -16,3 +18,15 @@ if (!config.cacheDir.match(/^\//)) {
 var proxy = new Proxy(config);
 proxy.on("log", console.log);
 proxy.listen();
+
+var cleaner = new Cleaner(config);
+function cleanAndQueue() {
+	console.log("Cleaning");
+	cleaner.clean().then(function() {
+		console.log("Clean completed");
+		setTimeout(function() {
+			cleanAndQueue();
+		}, 30*60*1000);
+	});
+}
+cleanAndQueue();

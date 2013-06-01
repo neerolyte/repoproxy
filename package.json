@@ -9,6 +9,7 @@
 		"underscore.string": "2.3.x",
 		"js-yaml": "2.0.x",
 		"moment": "2.0.x",
+		"findit": "0.1.x",
 		"coffee-script": "*"
 	},
 	"devDependencies": {
