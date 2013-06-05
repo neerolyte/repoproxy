@@ -20,8 +20,14 @@ Repoproxy uses two directories:
  * `data/` - copies of actual files from upstream repos
  * `meta/` - simplistic metadata about where a file came from (enabling things like IMS freshness checks)
 
+# External References
+
+A good caching guide: [http://www.mnot.net/cache_docs/](http://www.mnot.net/cache_docs/)
+
 # TODOs
 
- * Cache does not yet expire and it'll definitely cache stuff you don't want.
- * no test to ensure critical headers remain valid (i.e. Content-type)
- * new files need to start returning immediately
+ * Header passthrough
+ * Freshness Validation
+  * Last-Modified -> If-Modified-Since
+  * Etag -> If-None-Match
+ * Pragma and Cache-Control
