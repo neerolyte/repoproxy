@@ -51,8 +51,7 @@ Missing features:
 
 ## squid-deb-proxy
 
-[squid-deb-proxy](https://launchpad.net/squid-deb-proxy) provides a 
-(theoretically) ready to get set of config around Squid to get you caching debs
+[squid-deb-proxy](https://launchpad.net/squid-deb-proxy) provides a (theoretically) ready to go set of config around Squid to get you caching debs
 immediately.
 
 Missing features:
@@ -66,8 +65,8 @@ Missing features:
 
 Issues:
 
- * Headers are stored in the same file as the content, making extracting the cache in to a useful static repo non trivial - http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/manual/Disk-format.html#Disk-format
- * Deduplication - I'd like to let the proxy server deduplicate upstream data when miss configured clients utilise different mirrors for the same repositories
+ * File format not suitable as a static repo cache - http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/manual/Disk-format.html#Disk-format
+ * Deduplication - I'd like to let the proxy server deduplicate upstream data when miss configured clients utilise different mirrors for the same files (or just stock configured CentOS/Scientific which utilising a randomised mirror for each set of downloads)
 
 # TODOs
 
