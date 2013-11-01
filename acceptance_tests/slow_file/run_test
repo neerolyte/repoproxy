@@ -63,7 +63,7 @@ cleanTemp().then ->
 	console.log("Completed at #{finished}ms")
 	contentOk = !(content.match(/^((foo){341}\n){100}$/) is null)
 	console.log("Content ok: #{contentOk}")
-	ok = first < 200 && finished < 1200 && contentOk
+	ok = first < 200 && finished < 1500 && contentOk
 .finally ->
 	proxy.proc.kill('SIGTERM')
 	server.proc.kill('SIGTERM')
