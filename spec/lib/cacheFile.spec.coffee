@@ -13,7 +13,7 @@ describe "CacheFile", ->
   sinon = require("sinon")
   moment = require("moment")
   util = require("util")
-  CacheFile = require(Fixture.LIB_DIR + "/cacheFile.js")
+  CacheFile = require(Fixture.LIB_DIR + "/cacheFile")
   
   # TODO: it'd be really nice to use a rerooted fs when it gets fixed
   # https://github.com/kriskowal/q-io/pull/32
