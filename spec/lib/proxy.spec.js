@@ -13,7 +13,7 @@ describe('Proxy', function() {
 	var moment = require('moment');
 
 	var nock = require('nock');
-	var Proxy = require(Fixture.LIB_DIR + '/proxy.js');
+	var Proxy = require(Fixture.LIB_DIR + '/proxy');
 
 	it("silently passes on unknown URLs", function() {
 		var scope = nock('http://example.com')

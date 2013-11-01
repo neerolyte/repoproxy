@@ -4,7 +4,7 @@ describe('Cacher', function() {
 	var util = require('util');
 	var sinon = require('sinon');
 
-	var Cacher = require(Fixture.LIB_DIR + '/cacher.js');
+	var Cacher = require(Fixture.LIB_DIR + '/cacher');
 	var CacheFile = require(Fixture.LIB_DIR + '/cacheFile');
 	var cacher;
 
