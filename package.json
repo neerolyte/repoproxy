@@ -26,6 +26,6 @@
 	},
 	"author": "David Schoen <dave@lyte.id.au>",
 	"scripts": {
-		"test": "node_modules/mocha/bin/mocha --colors --recursive spec --reporter spec && acceptance_tests/run_tests"
+		"test": "node_modules/mocha/bin/mocha --colors --recursive spec --reporter spec --compilers coffee:coffee-script && acceptance_tests/run_tests"
 	}
 }
