@@ -31,7 +31,7 @@ sleep 1
 
 http_proxy="http://localhost:3142/" wget http://localhost:$port/the-right-url -O server_out.tmp
 
-# check the md5sum
+# confirm it's ok
 diff ./server_out.tmp <(echo "/the-right-url")
 status=$?
 

@@ -38,14 +38,13 @@ sleep 1
 )
 
 # check all the sums
-md5sum -c <(cat << EOF
+md5sum -c - << EOF
 a795a8af86483adc2fcd82f76ff9e0e1  server_out_1.tmp
 a795a8af86483adc2fcd82f76ff9e0e1  server_out_2.tmp
 a795a8af86483adc2fcd82f76ff9e0e1  server_out_3.tmp
 a795a8af86483adc2fcd82f76ff9e0e1  server_out_4.tmp
 a795a8af86483adc2fcd82f76ff9e0e1  server_out_5.tmp
 EOF
-)
 status=$?
 
 cleanup
