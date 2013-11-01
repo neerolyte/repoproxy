@@ -6,6 +6,8 @@ I just wanted a simple mirroring proxy server for repositories.
 
 apt-cacher is not simple enough.
 
+It's probably worth also noting that at the moment I'm still just using repoproxy as a project to tinker with some NodeJS in.
+
 # Features
 
  * collapsed forwarding
@@ -67,15 +69,3 @@ Issues:
 
  * File format not suitable as a static repo cache - http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/manual/Disk-format.html#Disk-format
  * Deduplication - I'd like to let the proxy server deduplicate upstream data when miss configured clients utilise different mirrors for the same files (or just stock configured CentOS/Scientific which utilising a randomised mirror for each set of downloads)
-
-# TODOs
-
- * Header passthrough
- * Freshness Validation
-  * Last-Modified -> If-Modified-Since
-  * Etag -> If-None-Match
- * Pragma and Cache-Control
- * Figure out when we get a HTTPS request and silently proxy on
- * Fix the log format
- * init script
- * deduplication
