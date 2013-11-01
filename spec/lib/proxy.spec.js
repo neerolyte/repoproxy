@@ -1,3 +1,6 @@
+/**
+ * The Proxy is the interface from the network in to repoproxy
+ */
 describe('Proxy', function() {
 	var Fixture = require('../fixture');
 	var expect = Fixture.expect;
@@ -10,7 +13,7 @@ describe('Proxy', function() {
 	var moment = require('moment');
 
 	var nock = require('nock');
-	var Proxy = require(LIB_DIR + '/proxy.js');
+	var Proxy = require(Fixture.LIB_DIR + '/proxy.js');
 
 	it("silently passes on unknown URLs", function() {
 		var scope = nock('http://example.com')

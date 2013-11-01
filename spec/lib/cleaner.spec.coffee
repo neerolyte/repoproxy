@@ -5,8 +5,8 @@ need any more.
 
 describe('Cleaner', ->
 	Fixture = require('../fixture')
-	Cleaner = require(LIB_DIR + '/cleaner')
-	CacheFile = require(LIB_DIR + '/cacheFile')
+	Cleaner = require(Fixture.LIB_DIR + '/cleaner')
+	CacheFile = require(Fixture.LIB_DIR + '/cacheFile')
 	FS = require('q-io/fs')
 	expect = Fixture.expect
 	

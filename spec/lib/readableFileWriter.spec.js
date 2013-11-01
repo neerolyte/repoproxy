@@ -9,7 +9,7 @@ describe("ReadableFileWriter", function() {
 	var FS = require('q-io/fs');
 	var Q = require('q');
 
-	var ReadableFileWriter = require(LIB_DIR + '/readableFileWriter.js');
+	var ReadableFileWriter = require(Fixture.LIB_DIR + '/readableFileWriter.js');
 
 	beforeEach(function() {
 		return FS.isDirectory(cacheDir)
