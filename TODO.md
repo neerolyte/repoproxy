@@ -1,6 +1,5 @@
 # TODOs
 
- * DNS failures currently terminate the proxy
  * document iptables tricks to redirect traffic to proxy
  * install friendly
   * scripted install
