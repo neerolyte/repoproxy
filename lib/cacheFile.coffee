@@ -111,8 +111,6 @@ CacheFile::purge = ->
     proms.push FS.remove(self.getPath("meta"))  if files[1]
     Q.all proms
 
-
-
 ###
 Sets up a stream writer for a given cachefile
 
@@ -140,9 +138,6 @@ CacheFile::_getNewWriter = ->
     ReadableFileWriter.create self.getPath("temp-data")
   ).then (writer) ->
     self._writer = writer
-    self._writer
-
-
 
 ###
 Get a stream reader
