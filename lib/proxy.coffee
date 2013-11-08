@@ -32,16 +32,20 @@ Proxy::application = (request) ->
   @normaliseRequest request
   @log "Incomming request for: " + request.url
   self = this
-  @_cacher.getCacheFile(request.url).then (cacheFile) ->
+  @_cacher.getCacheFile(request.url).then((cacheFile) ->
     if cacheFile
       self._appCacheable request, cacheFile
     else
-      
       # not cacheable, just silently proxy
       self.log "Silently proxying: " + request.url
       HTTP.request request.url
-
-
+  ).fail((err) ->
+    Apps.ok(
+      "#{err}", # just conver the error to string for now
+      'text/plain', 
+      502 # gateway error - probably true
+    )
+  )
 
 ###
 We seem to get corrupted requests through when acting as a proxy
@@ -70,10 +74,8 @@ Proxy::_appCacheable = (request, cacheFile) ->
       cacheFile.getReader().then (reader) ->
         self.log "Returning cached file for: " + request.url
         Apps.ok reader
-
     else
       self._appCacheFromUpstream request, cacheFile
-
 
 
 ###
@@ -84,8 +86,6 @@ Proxy::_appCollapse = (request, cacheFile) ->
   @log "Collapsing: " + request.url
   cacheFile.getReader().then (reader) ->
     Apps.ok reader
-
-
 
 ###
 Grab something from upstream that doesn't have any cache yet and store it
@@ -146,3 +146,5 @@ Expose the underlying address function
 ###
 Proxy::address = ->
   @_server.address()
+
+# vim: sw=2 ts=2 et

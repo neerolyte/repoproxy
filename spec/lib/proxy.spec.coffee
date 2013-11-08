@@ -13,6 +13,7 @@ describe "Proxy", ->
   moment = require("moment")
   nock = require("nock")
   Proxy = require(Fixture.LIB_DIR + "/proxy")
+
   it "silently passes on unknown URLs", ->
     scope = nock("http://example.com").get("/").reply(200, "foo")
     proxy = new Proxy(cacheDir: cacheDir)
@@ -23,13 +24,27 @@ describe "Proxy", ->
         host: "127.0.0.1"
         headers:
           host: "example.com"
-
     ).then((res) ->
       res.body.read()
     ).then (body) ->
       expect(body.toString("utf-8")).to.equal "foo"
       expect(proxy.application.calledOnce).to.be.true
 
+  it "catches low level HTTP errors", ->
+    res = null
+    proxy = new Proxy(cacheDir: cacheDir)
+    proxy.listen().then(->
+      HTTP.request
+        port: proxy.address().port
+        host: "127.0.0.1"
+        headers:
+          host: "0.0.0.0" # guaranteed to fail
+    ).then((r) ->
+      res = r
+      res.body.read()
+    ).then (body) ->
+      expect(body.toString("utf-8")).to.match(/ECONNREFUSED/)
+      expect(res.status).to.not.equal 200
 
   describe "when there is some cache configuration", ->
     proxy = undefined
@@ -152,5 +167,4 @@ describe "Proxy", ->
       Proxy::normaliseRequest req
       expect(req.url).to.equal "http://example.com/"
 
-
-
+# vim: sw=2 ts=2 et
