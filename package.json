@@ -4,22 +4,23 @@
 	"version": "0.0.0",
 	"dependencies": {
 		"q": "0.9.x",
-		"q-io": "1.6.x",
-		"underscore": "1.4.x",
+		"q-io": "1.10.x",
+		"underscore": "1.5.x",
 		"underscore.string": "2.3.x",
-		"js-yaml": "2.0.x",
-		"moment": "2.0.x",
+		"js-yaml": "2.1.x",
+		"moment": "2.4.x",
 		"findit": "0.1.x",
-		"coffee-script": "*"
+		"coffee-script": "1.6.x",
+		"winston": "0.7.x"
 	},
 	"devDependencies": {
-		"mocha": "1.9.x",
-		"chai": "1.6.x",
-		"chai-as-promised": "3.3.x",
-		"mocha-as-promised": "1.3.x",
+		"mocha": "1.14.x",
+		"chai": "1.8.x",
+		"chai-as-promised": "4.1.x",
+		"mocha-as-promised": "1.4.x",
 		"sinon-chai": "2.4.x",
 		"sinon": "1.7.x",
-		"nock": "0.18.x"
+		"nock": "0.22.x"
 	},
 	"engines": {
 		"node": "0.10.x"
