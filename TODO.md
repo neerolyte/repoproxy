@@ -11,5 +11,4 @@
   * Last-Modified -> If-Modified-Since
   * Etag -> If-None-Match
  * Pragma and Cache-Control
- * Figure out when we get a HTTPS request and silently proxy on
  * deduplication
