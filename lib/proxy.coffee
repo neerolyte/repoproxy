@@ -4,6 +4,7 @@ Proxy = (opts) ->
   @_server = HTTP.Server((request) ->
     self.application request
   )
+  @_server.node.addListener 'connect', self.connectProxy.bind(self)
   @_cacheDir = opts.cacheDir
   @_port = opts.port or null
   @_cacher = new Cacher(opts)
@@ -17,6 +18,7 @@ Apps = require("q-io/http-apps")
 Reader = require("q-io/reader")
 util = require("util")
 Events = require("events")
+net = require("net")
 _ = require("underscore")
 Cacher = require("./cacher")
 util.inherits Proxy, Events.EventEmitter
@@ -30,7 +32,7 @@ a response goes out.
 ###
 Proxy::application = (request) ->
   @normaliseRequest request
-  @log "Incomming request for: " + request.url
+  @log "Incoming request for: " + request.url
   self = this
   @_cacher.getCacheFile(request.url).then((cacheFile) ->
     if cacheFile
@@ -42,14 +44,40 @@ Proxy::application = (request) ->
   ).fail((err) ->
     Apps.ok(
       "#{err}", # just conver the error to string for now
-      'text/plain', 
+      'text/plain',
       502 # gateway error - probably true
     )
   )
 
 ###
+This is the entry point in to the proxy for CONNECT requests
+###
+Proxy::connectProxy = (res, socket, bodyHead) ->
+  self = this
+  endpoint = res.url.split ':'
+
+  @log "CONNECT request for: " + res.url
+
+  serviceSocket = new net.Socket()
+    .addListener('data', (data) ->
+      socket.write data
+    )
+    .addListener('error', () ->
+      socket.destroy()
+    )
+    .connect (parseInt (endpoint[1] || '443')), endpoint[0]
+
+  socket
+    .addListener('data', (data) ->
+      serviceSocket.write data
+    )
+    # tell the client it went OK, let's get to work
+    .write "HTTP/1.0 200 OK\r\n\r\n"
+
+
+###
 We seem to get corrupted requests through when acting as a proxy
-this just triest to fix them back up
+this just tries to fix them back up
 ###
 Proxy::normaliseRequest = (request) ->
   request.url = request.path  if request.path.match(/^http:\/\//)
