@@ -1,0 +1,43 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"
+
+rm -rf -- *.tmp temp
+
+cleanup() {
+	kill $server_pid $repoproxy_pid > /dev/null 2>&1
+	rm -rf -- *.tmp temp
+}
+trap cleanup SIGINT SIGTERM
+
+
+# generate a certificate
+openssl req -new -x509 -days 10 -nodes -out ./cert.tmp -keyout ./key.tmp -subj "/CN=localhost" >&/dev/null
+
+# start up a server
+./server.js &
+server_pid=$!
+
+# find the port the server is listening on
+for i in {0..5}; do
+	if [[ -f server_port.tmp ]]; then
+		break;
+	fi
+	sleep 0.5
+done
+port=$(cat server_port.tmp)
+
+# start up a repoproxy
+../../repoproxy.js &
+repoproxy_pid=$!
+sleep 1
+
+https_proxy="http://localhost:3142/" wget --no-check-certificate https://localhost:$port/the-right-url -O server_out.tmp
+
+# confirm it's ok
+diff ./server_out.tmp <(echo "/the-right-url")
+status=$?
+
+cleanup
+
+exit $status
