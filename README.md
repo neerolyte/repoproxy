@@ -1,5 +1,7 @@
 # Repoproxy
 
+WARNING: While there's a decent chunk of code already working, this isn't quite a working product just yet.
+
 [![Build Status](https://travis-ci.org/neerolyte/repoproxy.png)](https://travis-ci.org/neerolyte/repoproxy)
 
 I just wanted a simple mirroring proxy server for repositories.
