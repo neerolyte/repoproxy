@@ -3,4 +3,6 @@
 /node_modules
 /vagrant/temp
 /config.yaml
+/config.json
 /temp
+/npm-debug.log

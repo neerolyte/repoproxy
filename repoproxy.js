@@ -4,11 +4,26 @@ require("coffee-script");
 var Proxy = require('./lib/proxy');
 var Cleaner = require('./lib/cleaner');
 var yaml = require('js-yaml');
+var stripJSONComments = require('strip-json-comments');
 var fs = require('fs');
 
-var config = yaml.load(
-	fs.readFileSync('./config.yaml', "utf-8")
-);
+var config;
+// try json config first
+try {
+	config = JSON.parse(
+		stripJSONComments(fs.readFileSync('./config.json', "utf-8"))
+	);
+} catch (e) {
+	// if it's missing
+	if (e.code == 'ENOENT' && fs.existsSync('./config.yaml')) {
+		// try yaml
+		config = yaml.load(
+			fs.readFileSync('./config.yaml', "utf-8")
+		);
+	} else {
+		throw e;
+	}
+}
 
 // if cacheDir is relative, make it absolute
 if (!config.cacheDir.match(/^\//)) {

@@ -1,0 +1,10 @@
+{
+	// port to listen on
+	"port": 3142,
+	// directory to store cache in
+	"cacheDir": "temp",
+	// hosts to enable cache for
+	"hosts": [
+		"example.com"
+	]
+}
